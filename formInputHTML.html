@@ -1,0 +1,48 @@
+<html>
+   <body>
+      
+      Insert student into database
+      <form action = "http://localhost:5000/insert" method = "post">
+      	 netID:
+      	 <input type = "text" name = "netID" />
+         First Name:
+         <input type = "text" name = "firstName" />
+         Last Name:
+         <input type = "text" name = "lastName" />
+         Dorm:
+         <input type = "text" name = "lastName" />
+         <input type = "submit" value = "INSERT" />
+      </form>
+      <p> - </p>
+
+      Delete student from database
+      <form action = "http://localhost:5000/delete" method = "post">
+      	 netID:
+      	 <input type = "text" name = "netID" />
+         <input type = "submit" value = "DELETE" />
+      </form>
+      <p> - </p>
+
+      Update student from database
+      <form action = "http://localhost:5000/update" method = "post">
+      	 netID:
+      	 <input type = "text" name = "netID" />
+         First Name:
+         <input type = "text" name = "firstName" />
+         Last Name:
+         <input type = "text" name = "lastName" />
+         Dorm:
+         <input type = "text" name = "lastName" />
+         <input type = "submit" value = "UPDATE" />
+      </form>
+      <p> - </p>
+
+      Select student from database
+      <form action = "http://localhost:5000/delete" method = "get">
+         netID:
+      	 <input type = "text" name = "netID" />
+         <input type = "submit" value = "SELECT" />
+      </form>
+      
+   </body>
+</html>
