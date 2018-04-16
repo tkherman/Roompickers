@@ -1,4 +1,5 @@
 import mysql.connector
+import hashlib
 
 config = {
     'user': 'ktong1',
@@ -16,6 +17,8 @@ womens_dorm = ['Badin', 'Breen-Phillips', 'Cavanaugh', 'Farley', 'Flaherty',
                'Howard', 'Lewis', 'Lyons', 'McGlinn', 'Pasquerilla East',
                'Pasquerilla West', 'Ryan', 'Walsh', 'Welsh Family']
 womens_names_file = 'girls_data.csv'
+
+year = ['FR', 'SO', 'JR']
 
 # Load data from file
 mens_data = []
@@ -35,10 +38,16 @@ cursor = cnx.cursor()
 
 # Insert mens_data into database
 dorm_i = 0
+year_i = 0
 for d in mens_data:
-    add_student = ("INSERT INTO Students (netID, first_name, last_name, dorm) VALUES (%s, %s, %s, %s)")
-    data_student = (d[2], d[0], d[1], mens_dorm[dorm_i])
+    add_student = ("INSERT INTO Students (netID, first_name, last_name, dorm_name, class, hash) VALUES (%s, %s, %s, %s, %s, %s)")
+    data_student = (d[2], d[0], d[1], mens_dorm[dorm_i], year[year_i], hashlib.md5(d[2]).hexdigest())
     cursor.execute(add_student, data_student)
+
+    if year_i >= len(year) - 1:
+        year_i = 0
+    else:
+        year_i += 1
 
     if dorm_i >= len(mens_dorm) - 1:
         dorm_i = 0
@@ -48,9 +57,14 @@ for d in mens_data:
 # Insert womens_data into database
 dorm_i = 0
 for d in womens_data:
-    add_student = ("INSERT INTO Students (netID, first_name, last_name, dorm) VALUES (%s, %s, %s, %s)")
-    data_student = (d[2], d[0], d[1], womens_dorm[dorm_i])
+    add_student = ("INSERT INTO Students (netID, first_name, last_name, dorm_name, class, hash) VALUES (%s, %s, %s, %s, %s, %s)")
+    data_student = (d[2], d[0], d[1], womens_dorm[dorm_i], year[year_i], hashlib.md5(d[2]).hexdigest())
     cursor.execute(add_student, data_student)
+
+    if year_i >= len(year) - 1:
+        year_i = 0
+    else:
+        year_i += 1
 
     if dorm_i >= len(womens_dorm) - 1:
         dorm_i = 0
