@@ -8,7 +8,7 @@ def query_student(netID):
     cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
     cursor = cnx.cursor()
 
-    query = ("SELECT netID, first_name, last_name, dorm FROM Students WHERE netID = %s")
+    query = ("SELECT netID, first_name, last_name, dorm_name FROM Students WHERE netID = %s")
 
     cursor.execute(query, (netID,))
 
@@ -51,7 +51,7 @@ def insert_student():
     cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
     cursor = cnx.cursor()
 
-    insertion = ("INSERT INTO Students (netID, first_name, last_name, dorm) VALUES (%s, %s, %s, %s)")
+    insertion = ("INSERT INTO Students (netID, first_name, last_name, dorm_name) VALUES (%s, %s, %s, %s)")
 
     try:
         cursor.execute(insertion, (netID, first_name, last_name, dorm))
@@ -72,7 +72,7 @@ def update_student():
     cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
     cursor = cnx.cursor()
 
-    update = ("UPDATE Students SET first_name = %s, last_name = %s, dorm = %s WHERE netID = %s")
+    update = ("UPDATE Students SET first_name = %s, last_name = %s, dorm_name = %s WHERE netID = %s")
 
     try:
         cursor.execute(update, (first_name, last_name, dorm, netID))
