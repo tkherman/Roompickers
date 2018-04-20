@@ -83,6 +83,23 @@ def update_student():
 
     return "Update succeeded"
 
+@app.route('/rooms/<netID>/<dorm>')
+def query_rooms(netID, dorm):
+    # tmp file for dummy json data
+    filename = '/home/cse30246/aborowsk/tests/test.json'
+    with open(filename, 'r') as jsonFile:
+        data = json.load(jsonFile)
+
+
+#    for i in cursor:
+ #       data['netID'] = i[0]
+  #      data['first_name'] = i[1]
+   #     data['last_name'] = i[2]
+    #    data['dorm'] = i[3]
+
+
+    return json.dumps(data)
+
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', port=5006, debug=True)
