@@ -83,6 +83,7 @@ def update_student():
 
     return "Update succeeded"
 
+# Return available room list
 @app.route('/floors/<netID>/<dorm_name>')
 def get_rooms(netID, dorm_name):
     mens_dorm = ['Alumni', 'Carroll', 'Dillon', 'Duncan', 'Dunne', 'Fisher',
@@ -121,6 +122,7 @@ def get_rooms(netID, dorm_name):
 
     return json.dumps(data)
 
+# Returns filtered room list
 @app.route('/filter/<netID>/<dorm_name>/<capacity>/<floor_num>/<size_min>/<size_max>')
 def filter_rooms(netID, dorm_name, capacity, floor_num, size_min, size_max): #add size filter
     mens_dorm = ['Alumni', 'Carroll', 'Dillon', 'Duncan', 'Dunne', 'Fisher',
@@ -196,6 +198,23 @@ def floor_metadata(netID, dorm_name):
         max_floor = i[0]
 
     data = {'min_size': min_size, 'max_size': max_size, 'min_floor': min_floor, 'max_floor': max_floor}
+
+    return json.dumps(data)
+
+# Return selection time for specified student
+@app.route('/time/<netID>/<dorm_name>/')
+def selection_time(netID):
+    cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
+    cursor = cnx.cursor()
+
+    query = ("SELECT start, end FROM Picks WHERE dorm_name = %s and netID = %s")
+    cursor.execute(query, (dorm_name, netID,))
+
+    data = {}
+
+    for i in cursor:
+        data['start'] = i[0]
+        data['end'] = i[1]
 
     return json.dumps(data)
 
