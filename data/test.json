@@ -1,0 +1,131 @@
+{
+    "rooms": 
+    	[
+    		{
+				"dorm_name": "Alumni",
+			    "floor_num": 1,
+			    "room_num": 101,
+			    "size": 200,
+			    "capacity": 2
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 1,
+			    "room_num": 102,
+			    "size": 300,
+			    "capacity": 3
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 1,
+			    "room_num": 103,
+			    "size":175,
+			    "capacity": 2
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 1,
+			    "room_num": 104,
+			    "size": 200,
+			    "capacity": 2
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 1,
+			    "room_num": 105,
+			    "size": 300,
+			    "capacity": 3
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 1,
+			    "room_num": 106,
+			    "size":175,
+			    "capacity": 2
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 2,
+			    "room_num": 201,
+			    "size": 200,
+			    "capacity": 2
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 2,
+			    "room_num": 202,
+			    "size": 300,
+			    "capacity": 3
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 2,
+			    "room_num": 203,
+			    "size":175,
+			    "capacity": 2
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 2,
+			    "room_num": 204,
+			    "size": 200,
+			    "capacity": 2
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 2,
+			    "room_num": 205,
+			    "size": 300,
+			    "capacity": 3
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 2,
+			    "room_num": 206,
+			    "size":175,
+			    "capacity": 2
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 3,
+			    "room_num": 301,
+			    "size": 200,
+			    "capacity": 2
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 3,
+			    "room_num": 302,
+			    "size": 300,
+			    "capacity": 3
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 3,
+			    "room_num": 303,
+			    "size":175,
+			    "capacity": 2
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 3,
+			    "room_num": 304,
+			    "size": 200,
+			    "capacity": 2
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 3,
+			    "room_num": 305,
+			    "size": 300,
+			    "capacity": 3
+	    	},
+	    	{
+				"dorm_name": "Alumni",
+			    "floor_num": 3,
+			    "room_num": 306,
+			    "size":175,
+			    "capacity": 2
+	    	}
+    	]
+}
