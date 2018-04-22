@@ -121,8 +121,8 @@ def get_rooms(netID, dorm_name):
 
     return json.dumps(data)
 
-@app.route('/filter/<netID>/<dorm_name>/<capacity>/<floor_num>')
-def filter_rooms(netID, dorm_name, capacity, floor_num): #add size filter
+@app.route('/filter/<netID>/<dorm_name>/<capacity>/<floor_num>/<size_min>/<size_max>')
+def filter_rooms(netID, dorm_name, capacity, floor_num, size_min, size_max): #add size filter
     mens_dorm = ['Alumni', 'Carroll', 'Dillon', 'Duncan', 'Dunne', 'Fisher',
                  'Keenan', 'Keough', 'Knott', 'Morrisey', 'O\'Neil Family',
                  'Siegfried', 'Sorin', 'St. Edward\'s', 'Stanford', 'Zahm']
@@ -139,9 +139,10 @@ def filter_rooms(netID, dorm_name, capacity, floor_num): #add size filter
     query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity "
             "FROM Rooms r, Selections s "
             "WHERE r.dorm_name = %s and (r.dorm_name <> s.dorm_name or "
-                "r.room_num <> s.room_num) and r.capacity = %s and r.floor_num = %s")
+                "r.room_num <> s.room_num) and r.capacity = %s and r.floor_num = %s "
+                "r.size >= %s and r.size <= %s")
 
-    cursor.execute(query, (dorm_name, capacity, floor_num,))
+    cursor.execute(query, (dorm_name, capacity, floor_num, size_min, size_max,))
 
     data = {"rooms": []}
 
@@ -156,6 +157,45 @@ def filter_rooms(netID, dorm_name, capacity, floor_num): #add size filter
 
     cursor.close()
     cnx.close()
+
+    return json.dumps(data)
+
+# Return min max floor numbers and min max size
+@app.route('/floor_metadata/<netID>/<dorm_name>/')
+def floor_metadata(netID, dorm_name):
+    min_floor = None
+    max_floor = None
+    min_size = None
+    max_size = None
+
+    cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
+    cursor = cnx.cursor()
+
+    query = ("SELECT size FROM Rooms WHERE dorm_name = %s ORDER BY size LIMIT 1")
+    cursor.execute(query, (dorm_name,))
+
+    for i in cursor:
+        min_size = i[0]
+
+    query = ("SELECT size FROM Rooms WHERE dorm_name = %s ORDER BY size DESC LIMIT 1")
+    cursor.execute(query, (dorm_name,))
+
+    for i in cursor:
+        max_size = i[0]
+
+    query = ("SELECT floor_num FROM Rooms WHERE dorm_name = %s ORDER BY floor_num LIMIT 1")
+    cursor.execute(query, (dorm_name,))
+
+    for i in cursor:
+        min_floor = i[0]
+
+    query = ("SELECT floor_num FROM Rooms WHERE dorm_name = %s ORDER BY floor_num DESC LIMIT 1")
+    cursor.execute(query, (dorm_name,))
+
+    for i in cursor:
+        max_floor = i[0]
+
+    data = {'min_size': min_size, 'max_size': max_size, 'min_floor': min_floor, 'max_floor': max_floor}
 
     return json.dumps(data)
 
@@ -178,4 +218,4 @@ def query_rooms(netID, dorm):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5006, debug=True)
+    app.run(host='0.0.0.0', port=5002, debug=True)
