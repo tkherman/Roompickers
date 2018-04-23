@@ -150,19 +150,22 @@ def filter_rooms(netID, dorm_name, capacity, floor_num, size_min, size_max): #ad
     cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
     cursor = cnx.cursor()
 
-    #query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity "
-     #       "FROM Rooms r, Selections s "
-      #      "WHERE r.dorm_name = %s and (r.dorm_name <> s.dorm_name or "
-       #         "r.room_num <> s.room_num) and r.capacity = %s and r.floor_num = %s "
-        #        "r.size >= %s and r.size <= %s")
-    #cursor.execute(query, (dorm_name, capacity, floor_num, size_min, size_max,))
-
+    # this query filters by floor num
+    '''
     query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity "
             "FROM Rooms r, Selections s "
             "WHERE r.dorm_name = %s and (r.dorm_name <> s.dorm_name or "
-                "r.room_num <> s.room_num)")
-
-    cursor.execute(query, (dorm_name,))
+                "r.room_num <> s.room_num) and r.capacity = %s and r.floor_num = %s and"
+                "r.size >= %s and r.size <= %s")
+    cursor.execute(query, (dorm_name, capacity, floor_num, size_min, size_max))
+    '''
+    # this query does not filter by floot num
+    query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity "
+             "FROM Rooms r, Selections s "
+             "WHERE r.dorm_name = %s and (r.dorm_name <> s.dorm_name or "
+             "r.room_num <> s.room_num) and r.capacity = %s and"
+             "r.size >= %s and r.size <= %s")
+    cursor.execute(query, (dorm_name, capacity, size_min, size_max))
 
     data = {"rooms": []}
 
