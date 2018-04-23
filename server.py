@@ -150,13 +150,19 @@ def filter_rooms(netID, dorm_name, capacity, floor_num, size_min, size_max): #ad
     cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
     cursor = cnx.cursor()
 
+    #query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity "
+     #       "FROM Rooms r, Selections s "
+      #      "WHERE r.dorm_name = %s and (r.dorm_name <> s.dorm_name or "
+       #         "r.room_num <> s.room_num) and r.capacity = %s and r.floor_num = %s "
+        #        "r.size >= %s and r.size <= %s")
+    #cursor.execute(query, (dorm_name, capacity, floor_num, size_min, size_max,))
+
     query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity "
             "FROM Rooms r, Selections s "
             "WHERE r.dorm_name = %s and (r.dorm_name <> s.dorm_name or "
-                "r.room_num <> s.room_num) and r.capacity = %s and r.floor_num = %s "
-                "r.size >= %s and r.size <= %s")
+                "r.room_num <> s.room_num)")
 
-    cursor.execute(query, (dorm_name, capacity, floor_num, size_min, size_max,))
+    cursor.execute(query, (dorm_name,))
 
     data = {"rooms": []}
 
@@ -246,6 +252,16 @@ def query_rooms(netID, dorm):
 
 
     return json.dumps(data)
+
+@app.route('/preferences/<netID>/<dorm>')
+def query_preferences(netID, dorm):
+    # tmp file for dummy json data
+    filename = '/home/cse30246/aborowsk/tests/test_pref.json'
+    with open(filename, 'r') as jsonFile:
+        data = json.load(jsonFile)
+
+    return json.dumps(data)
+
 
 
 if __name__ == '__main__':
