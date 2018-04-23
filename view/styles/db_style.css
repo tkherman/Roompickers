@@ -36,21 +36,65 @@ html {
     float: left;
 }
 
+
+
+
+
+.header-fixed2 {
+    margin-top: 25px;
+    margin-left: 20px;
+    width: 100% 
+}
+
+.header-fixed2 > thead,
+.header-fixed2 > tbody,
+.header-fixed2 > thead > tr,
+.header-fixed2 > tbody > tr,
+.header-fixed2 > thead > tr > th,
+.header-fixed2 > tbody > tr > td {
+    display: block;
+}
+
+.header-fixed2 > tbody > tr:after,
+.header-fixed2 > thead > tr:after {
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+
+.header-fixed2 > tbody {
+    overflow-y: auto;
+    height: 150px;
+}
+
+.header-fixed2 > tbody > tr > td,
+.header-fixed2 > thead > tr > th {
+    width: 13.5%;
+    float: left;
+}
+
 .floor-button{
 	width: 450px;
 	margin-left: 5%;
 
 }
 
+
+
 .my-table{
 	width: 450px;
+    max-height: 95px;
 	margin-left: 43%;
 	margin-right: 0;
+    margin-bottom: 10px;
 }
 
 .mydiv {
 	margin-left: 40%;
 	margin-right: 5px;
+    max-height: 25px;
+    margin-top:10px;
 }
 
 .slidecontainer {
@@ -79,14 +123,14 @@ html {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #000080;
+    background: #01013a;
     cursor: pointer;
 }
 
 .slider::-moz-range-thumb {
     width: 12px;
     height: 12px;
-    background: #000080;
+    background: #01013a;
     cursor: pointer;
     padding-bottom: 5px;
 }
@@ -95,19 +139,20 @@ html {
 	position: absolute;
 	top: 5px;
 	right: 25px;
+    padding-top: 5px;
 	padding-left: 5px;
-	border-left: 2pt solid #000080;
+	border-left: 2pt solid #01013a;
 }
 
 #slidecontainer2{
 	position:absolute;
-	top: 55px;
+	top: 50px;
 	right: 25px;
 	padding-top: 5px;
 	padding-left: 5px;
 	padding-bottom: 5px;
-	border-left: 2pt solid #000080;
-	border-bottom: 2pt solid #000080;
+	border-left: 2pt solid #01013a;
+	border-bottom: 2pt solid #01013a;
 }
 
 .rangeLabel{
@@ -116,11 +161,75 @@ html {
 }
 
 .carousel {
-    width: 300px;
+    position:absolute;
+    top: 5px;
+    left: 25px;
+    width: 475px;
     height: 300px;
+    border: 2pt solid #01013a;
 }
 
-.carousel-inner > .item > img {
-  width:640px;
-  height:360px;
+.item {
+    position:absolute;
+    top: 5px;
+    left: 25px;
+    width: 475px;
+    height: 225px;
 }
+
+.carousel-caption{
+    padding-bottom: 5px;
+    color: #01013a;
+    font-family: Garamond;
+}
+
+.carousel-indicators .active{
+    background-color: #01013a;
+}
+
+
+.my-queue-table {
+    position:fixed;
+    width: 100%;
+    border-bottom:0; 
+}
+
+.queue{
+    position: fixed;
+    top: 310px;
+    width: 97%;
+}
+
+.queue-header {
+    background-color: #01013a;
+    border-bottom: #01013a;
+    width: 97%;
+}
+
+
+.queue-header-text{
+    color: white;
+}
+ 
+#queue-title{
+    position: fixed;
+    top: 300px;
+    margin-left: 20px;
+    margin-bottom: 25px;
+}
+
+.table>thead>tr>th{
+  border-bottom:0; 
+}
+
+.room-header {
+    background-color: #01013a;
+    border-bottom: #01013a;
+}
+
+
+.room-header-text{
+    color: white;
+}
+
+

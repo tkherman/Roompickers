@@ -18,9 +18,11 @@
 		<body>
 			<div class="container">
    		 		<div class="accordion" id="accordion">
+   		 			<div class="panel" id="panel">
 
 
 
+   		 			</div>
    		 		</div>
    		 		<div id="GSCCModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 				 <div class="modal-dialog">
@@ -53,14 +55,23 @@
 				    <div class="carousel-inner">
 				      <div class="item active">
 				        <img src="../../data/105101.png" alt="1st Floor">
+				        <div class="carousel-caption">
+					        <h3>1st Floor</h3>
+					    </div>
 				      </div>
 
 				      <div class="item">
 				        <img src="../../data/105102.png" alt="2nd Floor">
+				        <div class="carousel-caption">
+					        <h3>2nd Floor</h3>
+					    </div>
 				      </div>
 				    
 				      <div class="item">
 				        <img src="../../data/105103.png" alt="3rd Floor">
+				        <div class="carousel-caption">
+					        <h3>3rd Floor</h3>
+					    </div>
 				      </div>
 				    </div>
 
@@ -75,16 +86,85 @@
 				    </a>
 				  </div>
 				</div>
+				<div class="queue">
+
+					<h4 id="queue-title"> Preference Queue </h4>
+				<table class="table table-striped header-fixed2 my-queue-table">
+		          <thead class="queue-header">
+		            <tr class="queue-header-text">
+		              <th scope="col">Room</th>
+		              <th scope="col">Roommate 1</th>
+		              <th scope="col">Roommate 2</th>
+		              <th scope="col">Roommate 3</th>
+		              <th scope="col">Roommate 4</th>
+		              <th scope="col"> </th>
+		              <th scope="col"> </th>
+		            </tr>
+		          </thead>
+		          <tbody>
+		            <tr>
+		              <td>101</td>
+		              <td>aborowsk</td>
+		              <td>tfranceschi</td>
+		              <td>ktong1</td>
+		              <td>dguerra</td>
+		              <td> 
+		                <button class="btn btn-success" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>
+		                </td>
+		                <td>
+		                <button class="btn btn-danger" type="button"><span class="glyphicon glyphicon-chevron-down"></span></button>
+		              </td>
+		            </tr>
+		            <tr>
+		              <td>101</td>
+		              <td>aborowsk</td>
+		              <td>tfranceschi</td>
+		              <td>ktong1</td>
+		              <td>dguerra</td>
+		              <td> 
+		                <button class="btn btn-success" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>
+		                </td>
+		                <td>
+		                <button class="btn btn-danger" type="button"><span class="glyphicon glyphicon-chevron-down"></span></button>
+		              </td>
+		            </tr>
+		            <tr>
+		              <td>101</td>
+		              <td>aborowsk</td>
+		              <td>tfranceschi</td>
+		              <td>ktong1</td>
+		              <td>dguerra</td>
+		              <td> 
+		                <button class="btn btn-success" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>
+		                </td>
+		                <td>
+		                <button class="btn btn-danger" type="button"><span class="glyphicon glyphicon-chevron-down"></span></button>
+		              </td>
+		            </tr>
+		            <tr>
+		              <td>101</td>
+		              <td>aborowsk</td>
+		              <td>tfranceschi</td>
+		              <td>ktong1</td>
+		              <td>dguerra</td>
+		              <td> 
+		                <button class="btn btn-success" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>
+		                </td>
+		                <td>
+		                <button class="btn btn-danger" type="button"><span class="glyphicon glyphicon-chevron-down"></span></button>
+		              </td>
+		            </tr>
+		          </tbody>
+		        </table>
+		    </div>
 
 				<form>
 				<div class="slidecontainer" id="slidecontainer1">
-					<input type="checkbox" class="checkBox" id="capCheckbox">
-				  	<input type="range" min="1" max="4" value="1" class="slider" id="capRange">
+				  	<input type="range" min="1" max="4" value="4" class="slider" id="capRange">
 				  	<p class="rangeLabel">Occupants: <span id="capValue"></span></p>
 				</div>
 				<div class="slidecontainer" id="slidecontainer2">
-					<input type="checkbox" class="checkBox" id="sqftCheckbox">
-				  	<input type="range" min="150" max="500" value="150" class="slider" id="sqftRange">
+				  	<input type="range" min="150" max="500" value="500" class="slider" id="sqftRange">
 				  	<p class="rangeLabel">Sqft: <span id="sqftValue"></span></p>
 				  	<!-- TODO: Add functionality so button submit repopulates floors and tables (should change this from a form to pure javascript so the page doesn't have to be refreshed, look at the onclick example at line 36), call repopulate_rooms function -->
 				  	<button type="submit" class="btn btn-primary">Search</button>

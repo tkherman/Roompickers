@@ -90,6 +90,7 @@ var get_data = function(url, callback) // How can I use this callback?
 }
 
 function populate_rooms(data) {
+  var minFloor = 1;
   var floors = 3;
   var jsonRooms = JSON.parse(data);
   var roomsArr = jsonRooms["rooms"];
@@ -101,6 +102,10 @@ function populate_rooms(data) {
     // varying parent
     var accordion = document.getElementById("accordion");
     var parent = accordion;
+
+    var panel = document.getElementById("panel");
+    parent.appendChild(panel);
+    parent = panel;
 
     var element = document.createElement("div");
     element.className = "mydiv";
@@ -124,16 +129,21 @@ function populate_rooms(data) {
     $(element).attr("data-toggle", "collapse");
     var attrText = "collapse" + floor;
     $(element).attr("data-target", "#" + attrText);
+
     $(element).attr("aria-expanded" , "true");
     $(element).attr("aria-controls" , attrText);
     element.innerText = "Floor " + floor;
     parent.appendChild(element);
-    parent = accordion;  
+    parent = panel;  
     // parent is now accordion
 
     element = document.createElement("div");
     element.id = attrText;
-    element.className = "collapse";
+    if(i == minFloor){
+        element.className = "collapse in";
+    }else{
+         element.className = "collapse";
+    }
     var headingText = "heading" + floor;
     $(element).attr("aria-labelledby" , headingText);
     $(element).attr("data-parent", "#accordion");
@@ -147,10 +157,12 @@ function populate_rooms(data) {
     parent = element;
 
     element = document.createElement("thead");
+    element.className = "room-header"
     parent.appendChild(element);
     parent = element;
 
     element = document.createElement("tr");
+    element.className = "room-header-text";
     parent.appendChild(element);
     parent = element;
     // parent is now tr
@@ -227,6 +239,7 @@ function populate_rooms(data) {
    }
 }
 
+
   document.addEventListener("DOMContentLoaded", function() { 
     // this function runs when the DOM is ready
 
@@ -252,5 +265,10 @@ function populate_rooms(data) {
 }
 
 
+});
+
+
+  $('[data-toggle="collapse"]').click(function() {
+  $('.collapse.in').collapse('hide')
 });
 
