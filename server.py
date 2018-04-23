@@ -1,6 +1,7 @@
 from flask import Flask, request
 import mysql.connector
 import json
+import os
 app = Flask(__name__)
 
 @app.route('/select/<netID>')
@@ -82,6 +83,17 @@ def update_student():
     cnx.commit()
 
     return "Update succeeded"
+
+# Return available room list
+@app.route('/floors/images/<netID>/<dorm_name>')
+def get_floorplans(netID, dorm_name):
+    path = 'data/floorplans/' + dorm_name;
+    files = os.popen('ls ' + path).read();
+    filenames = files.split()
+    
+    # dorm_name is first value in list
+    filenames.insert(0, dorm_name);
+    return json.dumps(filenames);
 
 # Return available room list
 @app.route('/floors/<netID>/<dorm_name>')
