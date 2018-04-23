@@ -2,9 +2,37 @@ var ADDR = "http://dsg1.crc.nd.edu"
 var PORT = 5002;
 
 
+
+function repopulate_rooms(){
+
+    clear_rooms(); // TODO: write the code for this function
+    /* 
+        edit the below function call to hit the right endpoint w/ 
+        the values from the filter sliders
+
+    get_data(ADDR + ":" + PORT + "endpoint/for/slidervals/gohere", populate_rooms);
+    */
+}
+
+function commit_preference(){
+    /* TODO:
+        This function should make a post request to the server 
+        some data about the new preference (I'll add a format for this in a little).
+
+        if the post request was successful:
+            - add that data to the local queue variable
+            - call function to re-populate the queue html
+            - clear & close modal
+        else:
+            - issue sometime of error message to the user (netid not in dorm)
+            - leave modal open for new input ???
+    */
+}
+
 function save_modal(){
 
-  clear_modal();
+  commit_preference();  // TODO: write the code for this function
+  //clear_modal();
 }
 
 function clear_modal(){
@@ -14,13 +42,21 @@ function clear_modal(){
   } 
 }
 
+function clear_rooms(){
+    /* TODO: 
+        - This function should be similar to the above function clear_modal()
+        you'll just have to change it to to the parent element of the floor / room
+        html generation
+    */
+}
+
 var populate_modal = function(event){
   var parent = document.getElementById("modal-body1");
   var element;
 
   var capId = "cap" + event.target.id.substring(6,9);
   var cap = parseInt(document.getElementById(capId).innerText);
-  for(var i=1; i<=cap; i++){
+  for(var i=1; i<=cap-1; i++){
     element = document.createElement("div");
     element.className = "form-group";
     parent.appendChild(element);
@@ -39,7 +75,7 @@ var populate_modal = function(event){
 
 }
 
-var select_rooms = function(url, callback) // How can I use this callback?
+var get_data = function(url, callback) // How can I use this callback?
 {
     var request = new XMLHttpRequest();
     request.onreadystatechange = function()
@@ -195,7 +231,7 @@ function populate_rooms(data) {
     // this function runs when the DOM is ready
 
   //var jsonRooms = select_rooms();
-  select_rooms(ADDR + ":" + PORT + "/floors/netid/Zahm", populate_rooms);
+  get_data(ADDR + ":" + PORT + "/floors/netid/Zahm", populate_rooms);
 
   var slider = document.getElementById("capRange");
   var output = document.getElementById("capValue");
