@@ -1,17 +1,13 @@
 var ADDR = "http://dsg1.crc.nd.edu"
 var PORT = 5002;
 
-
-
 function repopulate_rooms(){
 
-    clear_rooms(); // TODO: write the code for this function
-    /* 
-        edit the below function call to hit the right endpoint w/ 
-        the values from the filter sliders
+    clear_rooms();
 
-    get_data(ADDR + ":" + PORT + "endpoint/for/slidervals/gohere", populate_rooms);
-    */
+    var maxCap = document.getElementById("capRange").value;
+    var maxSize = document.getElementById("sqftRange").value;
+    get_data(ADDR + ":" + PORT + "/filter/netid/Zahm/"+maxCap+"/0/"+maxSize, populate_rooms);
 }
 
 function commit_preference(){
@@ -43,11 +39,10 @@ function clear_modal(){
 }
 
 function clear_rooms(){
-    /* TODO: 
-        - This function should be similar to the above function clear_modal()
-        you'll just have to change it to to the parent element of the floor / room
-        html generation
-    */
+    var accordion = document.getElementById("panel");
+    while (accordion.firstChild) {
+        accordion.removeChild(accordion.firstChild);
+    } 
 }
 
 

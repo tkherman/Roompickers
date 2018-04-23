@@ -72,7 +72,7 @@
             <input type="range" min="150" max="500" value="500" class="slider" id="sqftRange">
             <p class="rangeLabel">Sqft: <span id="sqftValue"></span></p>
             <!-- TODO: Add functionality so button submit repopulates floors and tables (should change this from a form to pure javascript so the page doesn't have to be refreshed, look at the onclick example at line 36), call repopulate_rooms function -->
-            <button type="submit" class="btn btn-primary">Search</button>
+            <button type="button" class="btn btn-primary" onclick="repopulate_rooms()">Search</button>
         </div>
           
         </div>
