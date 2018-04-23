@@ -70,7 +70,7 @@ html {
 
 .header-fixed2 > tbody > tr > td,
 .header-fixed2 > thead > tr > th {
-    width: 13.5%;
+    width: 12%;
     float: left;
 }
 
@@ -174,7 +174,7 @@ html {
     top: 5px;
     left: 25px;
     width: 475px;
-    height: 225px;
+    height: 275px;
 }
 
 .carousel-caption{
@@ -190,20 +190,21 @@ html {
 
 .my-queue-table {
     position:fixed;
-    width: 100%;
+    left:5px;
+    width: 95%;
     border-bottom:0; 
 }
 
 .queue{
     position: fixed;
-    top: 310px;
-    width: 97%;
+    top: 320px;
+    width: 95%;
 }
 
 .queue-header {
     background-color: #01013a;
     border-bottom: #01013a;
-    width: 97%;
+    width: 100%;
 }
 
 
@@ -213,8 +214,8 @@ html {
  
 #queue-title{
     position: fixed;
-    top: 300px;
-    margin-left: 20px;
+    top: 310px;
+    left: 30px;
     margin-bottom: 25px;
 }
 

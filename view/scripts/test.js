@@ -50,30 +50,6 @@ function clear_rooms(){
     */
 }
 
-var populate_modal = function(event){
-  var parent = document.getElementById("modal-body1");
-  var element;
-
-  var capId = "cap" + event.target.id.substring(6,9);
-  var cap = parseInt(document.getElementById(capId).innerText);
-  for(var i=1; i<=cap-1; i++){
-    element = document.createElement("div");
-    element.className = "form-group";
-    parent.appendChild(element);
-    parent = element;
-
-    element = document.createElement("label");
-    element.innerText = "Roommate " + i + ":";
-    parent.appendChild(element);
-
-    element = document.createElement("input");
-    element.className = "form-control";
-    element.id = "roommate" + cap;
-    element.type ="text";
-    parent.appendChild(element);
-  }
-
-}
 
 var get_data = function(url, callback) // How can I use this callback?
 {
@@ -89,7 +65,102 @@ var get_data = function(url, callback) // How can I use this callback?
     request.send(null);
 }
 
+var populate_modal = function(event){
+    var parent = document.getElementById("modal-body1");
+    var element;
+
+    var capId = "cap" + event.target.id.substring(6,9);
+    var cap = parseInt(document.getElementById(capId).innerText);
+    for(var i=1; i<=cap-1; i++){
+        element = document.createElement("div");
+        element.className = "form-group";
+        parent.appendChild(element);
+        parent = element;
+
+        element = document.createElement("label");
+        element.innerText = "Roommate " + i + ":";
+        parent.appendChild(element);
+
+        element = document.createElement("input");
+        element.className = "form-control";
+        element.id = "roommate" + cap;
+        element.type ="text";
+        parent.appendChild(element);
+      }
+}
+
+function populate_carousel(data){
+
+    var floorPlans = JSON.parse(data);
+    var dorm = floorPlans[0];
+    var imagePath = "../../data/floorplans/" + dorm + "/";
+
+    var carousel = document.getElementById("myCarousel");
+
+    var ol = document.createElement("ol");
+    ol.className = "carousel-indicators";
+    carousel.insertBefore(ol, carousel.childNodes[0]);
+
+    var inner = document.createElement("div");
+    inner.className = "carousel-inner";
+    carousel.insertBefore(inner, carousel.childNodes[0]);
+
+    var parent;
+    var element;
+    for(var i=1; i<floorPlans.length; i++){
+        imagePath = "../../data/floorplans/" + dorm + "/";
+        imagePath = imagePath + floorPlans[i];
+
+        // Indicator stuff
+        parent = ol;    //Parent now ol
+        element = document.createElement("li");
+        if(i == 1){
+            element.className = "active";
+        }
+        $(element).attr("data-target", "#myCarousel");
+        $(element).attr("data-slide-to", (i-1).toString());
+        parent.appendChild(element);
+
+        //Slide Wrappers
+        parent = inner;     //Parent now inner
+        element = document.createElement("div");
+        if(i == 1){
+            element.className = "item active";
+        } else{
+            element.className = "item";
+        }
+
+        parent.appendChild(element);
+        parent = element;
+
+        element = document.createElement("img");
+        element.src = imagePath;
+        var floorString = "Floor " + i.toString();
+        parent.appendChild(element);
+
+        element = document.createElement("div");
+        element.className = "carousel-caption";
+        parent.appendChild(element);
+        parent = element;
+
+        element = document.createElement("h3");
+        element.innerText = floorString;
+        parent.appendChild(element);
+    }
+}
+
+function populate_preference_queue(data){
+
+
+    
+
+
+
+
+}
+
 function populate_rooms(data) {
+// replace these with actually data using endpoint
   var minFloor = 1;
   var floors = 3;
   var jsonRooms = JSON.parse(data);
@@ -243,8 +314,14 @@ function populate_rooms(data) {
   document.addEventListener("DOMContentLoaded", function() { 
     // this function runs when the DOM is ready
 
-  //var jsonRooms = select_rooms();
+  // populate the floor-buttons and rooms table
   get_data(ADDR + ":" + PORT + "/floors/netid/Zahm", populate_rooms);
+
+  // populate floor plan images on carousel
+  get_data(ADDR + ":" + PORT + "/floors/images/netid/fisher", populate_carousel);
+
+  // populate the current users preference data
+  //get_data(ADDR + ":" + PORT + "/preferences/netid/Zahm", populate_preference_queue);
 
   var slider = document.getElementById("capRange");
   var output = document.getElementById("capValue");
