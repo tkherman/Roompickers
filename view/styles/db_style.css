@@ -65,7 +65,7 @@ html {
 
 .header-fixed2 > tbody {
     overflow-y: auto;
-    height: 150px;
+    height: 200px;
 }
 
 .header-fixed2 > tbody > tr > td,
@@ -205,6 +205,7 @@ html {
     background-color: #01013a;
     border-bottom: #01013a;
     width: 100%;
+    margin-top: 20px;
 }
 
 
@@ -214,7 +215,7 @@ html {
  
 #queue-title{
     position: fixed;
-    top: 310px;
+    top: 325px;
     left: 30px;
     margin-bottom: 25px;
 }
@@ -231,6 +232,12 @@ html {
 
 .room-header-text{
     color: white;
+}
+
+#save-queue {
+    position: fixed;
+    right: 50px;
+    margin-bottom: 25px;
 }
 
 /* stuff for img zoom modal (from https://www.w3schools.com/howto/howto_css_modal_images.asp) */
