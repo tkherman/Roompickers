@@ -1,10 +1,12 @@
 var ADDR = "http://dsg1.crc.nd.edu"
 var PORT = 5002;
 
+
+
 function repopulate_rooms(){
 
-    clear_rooms();
-
+    clear_rooms(); // TODO: write the code for this function
+    
     var maxCap = document.getElementById("capRange").value;
     var maxSize = document.getElementById("sqftRange").value;
     get_data(ADDR + ":" + PORT + "/filter/netid/Zahm/"+maxCap+"/0/"+maxSize, populate_rooms);
@@ -23,6 +25,10 @@ function commit_preference(){
             - issue sometime of error message to the user (netid not in dorm)
             - leave modal open for new input ???
     */
+}
+
+function save_queue(){
+
 }
 
 function save_modal(){
@@ -145,12 +151,169 @@ function populate_carousel(data){
 }
 
 function populate_preference_queue(data){
+    var jsonPrefs = JSON.parse(data);
+    var prefsArr = jsonPrefs["preferences"];
+
+    var queue = document.getElementById("queue");
+
+    var parent;
+    var element;
 
 
-    
+    parent = queue;
+    // parent is now queue
 
+    var table = document.createElement("table");
+    element = table;
+    element.className = "table table-striped header-fixed2 my-queue-table";
+    parent.appendChild(element);
+    parent = element;
 
+    element = document.createElement("thead");
+    element.className = "queue-header";
+    parent.appendChild(element);
+    parent = element;
 
+    element = document.createElement("tr");
+    element.className = "queue-header-text";
+    parent.appendChild(element);
+    parent = element;
+
+    element = document.createElement("th");
+    element.scope = "col";
+    element.innerText = "Room";
+    parent.appendChild(element);
+
+    element = document.createElement("th");
+    element.scope = "col";
+    element.innerText = "Roommate 1";
+    parent.appendChild(element);
+
+    element = document.createElement("th");
+    element.scope = "col";
+    element.innerText = "Roommate 2";
+    parent.appendChild(element);
+
+    element = document.createElement("th");
+    element.scope = "col";
+    element.innerText = "Roommate 3";
+    parent.appendChild(element);
+
+    element = document.createElement("th");
+    element.scope = "col";
+    element.innerText = " ";
+    parent.appendChild(element);
+
+    element = document.createElement("th");
+    element.scope = "col";
+    element.innerText = " ";
+    parent.appendChild(element);
+
+    element = document.createElement("th");
+    element.scope = "col";
+    element.innerText = " ";
+    parent.appendChild(element);
+
+    element = document.createElement("th");
+    element.scope = "col";
+    element.innerText = " ";
+    parent.appendChild(element);
+
+    parent = table;
+
+    var tbody = document.createElement("tbody");
+    element = tbody;
+    parent.appendChild(element);
+
+    var parent2;
+    for(var i=0; i <prefsArr.length; i++){
+        parent = tbody;     // parent is now tbody
+
+        element = document.createElement("tr");
+        parent.appendChild(element);
+        parent = element;
+
+        element = document.createElement("td");
+        element.innerText = prefsArr[i]["room"];
+        parent.appendChild(element); 
+
+        element = document.createElement("td");
+        element.innerText = prefsArr[i]["rm1"];
+        parent.appendChild(element);
+
+        element = document.createElement("td");
+        element.innerText = prefsArr[i]["rm2"];
+        parent.appendChild(element); 
+
+        element = document.createElement("td");
+        element.innerText = prefsArr[i]["rm3"];
+        parent.appendChild(element); 
+
+        element = document.createElement("td");
+        parent.appendChild(element); 
+        parent2 = parent;  // parent2 is the table row
+        parent = element;  // parent is the table data
+
+        element = document.createElement("button");
+        element.className = "btn btn-primary";
+        element.type = "button";
+        element.title = "Move room up the queue";
+        parent.appendChild(element);
+        parent = element;   //parent is now the button 
+
+        element = document.createElement("span");
+        element.className = "glyphicon glyphicon-chevron-up"
+        parent.appendChild(element); 
+
+        parent = parent2;
+        element = document.createElement("td");
+        parent.appendChild(element); 
+        parent = element;  // parent is the table data
+
+        element = document.createElement("button");
+        element.className = "btn btn-primary";
+        element.type = "button";
+        element.title = "Move room down the queue";
+        parent.appendChild(element);
+        parent = element;   //parent is now the button 
+
+        element = document.createElement("span");
+        element.className = "glyphicon glyphicon-chevron-down"
+        parent.appendChild(element); 
+
+        parent = parent2;   // parent is back to the table row
+        element = document.createElement("td");
+        parent.appendChild(element); 
+        parent = element;  // parent is the table data
+
+        element = document.createElement("button");
+        element.className = "btn btn-success";
+        element.type = "button";
+        element.title = "Lock in this room";
+        parent.appendChild(element);
+        parent = element;   //parent is now the button 
+
+        element = document.createElement("span");
+        element.className = "glyphicon glyphicon-lock"
+        parent.appendChild(element); 
+
+        parent = parent2;   // parent is back to the table row
+        element = document.createElement("td");
+        parent.appendChild(element); 
+        parent = element;  // parent is the table data
+
+        element = document.createElement("button");
+        element.className = "btn btn-danger";
+        element.type = "button";
+        element.title = "Remove room from queue";
+        parent.appendChild(element);
+        parent = element;   //parent is now the button 
+
+        element = document.createElement("span");
+        element.className = "glyphicon glyphicon-remove";
+        parent.appendChild(element); 
+
+    }
 
 }
 
@@ -250,7 +413,7 @@ function populate_rooms(data) {
 
     element = document.createElement("th");
     element.scope = "col";
-    element.innerText = "Add to Queue"
+    element.innerText = "";
     parent.appendChild(element);
     parent = table;
     // parent is now table
@@ -295,6 +458,7 @@ function populate_rooms(data) {
     element.className = "btn btn-primary";
     element.id = "button" + room["room_num"];
     element.type = "button";
+    element.title = "Add room to queue";
     $(element).attr("data-target", "#GSCCModal");
     $(element).attr("data-toggle", "modal");
     element.innerText = " + ";
@@ -316,7 +480,7 @@ function populate_rooms(data) {
   get_data(ADDR + ":" + PORT + "/floors/images/netid/fisher", populate_carousel);
 
   // populate the current users preference data
-  //get_data(ADDR + ":" + PORT + "/preferences/netid/Zahm", populate_preference_queue);
+  get_data(ADDR + ":" + PORT + "/preferences/netid/Zahm", populate_preference_queue);
 
   var slider = document.getElementById("capRange");
   var output = document.getElementById("capValue");
