@@ -130,7 +130,10 @@ function populate_carousel(data){
 
         element = document.createElement("img");
         element.src = imagePath;
+        $(element).attr("id", imagePath); // set img id to the image path so I can get it in zoom modal
+        element.onclick = function(){ zoom_in_img(imagePath); }
         var floorString = "Floor " + i.toString();
+        element.alt = floorString;
         parent.appendChild(element);
 
         element = document.createElement("div");
@@ -343,4 +346,21 @@ function populate_rooms(data) {
   $('[data-toggle="collapse"]').click(function() {
   $('.collapse.in').collapse('hide')
 });
+
+function zoom_in_img(imgId){
+    var modal = document.getElementById("myModal");
+    var panel = document.getElementsByClassName("item active")[0];
+    var img = panel.childNodes[0];
+    var modalImg = document.getElementById("img01");
+    var captionText = document.getElementById("caption");
+    
+    modal.style.display = "block";
+    modalImg.src = img.src;
+    captionText.innerHTML = img.alt;
+    
+    var span = document.getElementsByClassName("close")[1];
+    span.onclick = function(){
+        modal.style.display = "none";
+    }
+}
 
