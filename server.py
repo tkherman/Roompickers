@@ -1,88 +1,10 @@
 from flask import Flask, request
 import mysql.connector
 import json
+import sys
 import os
 app = Flask(__name__)
 
-@app.route('/select/<netID>')
-def query_student(netID):
-    cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
-    cursor = cnx.cursor()
-
-    query = ("SELECT netID, first_name, last_name, dorm_name FROM Students WHERE netID = %s")
-
-    cursor.execute(query, (netID,))
-
-    data = {}
-
-    for i in cursor:
-        data['netID'] = i[0]
-        data['first_name'] = i[1]
-        data['last_name'] = i[2]
-        data['dorm'] = i[3]
-
-    cursor.close()
-    cnx.close()
-
-    return json.dumps(data)
-
-@app.route('/delete/<netID>')
-def delete_student(netID):
-    cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
-    cursor = cnx.cursor()
-
-    command = ("DELETE FROM Students WHERE netID = %s")
-
-    try:
-        cursor.execute(command, (netID,))
-    except:
-        return "Deletion failed"
-
-    cnx.commit()
-
-    return "Deletion succeeded"
-
-@app.route('/insert', methods = ['POST'])
-def insert_student():
-    netID = request.form['netID_i']
-    first_name = request.form['first_name_i']
-    last_name = request.form['last_name_i']
-    dorm = request.form['dorm_i']
-
-    cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
-    cursor = cnx.cursor()
-
-    insertion = ("INSERT INTO Students (netID, first_name, last_name, dorm_name) VALUES (%s, %s, %s, %s)")
-
-    try:
-        cursor.execute(insertion, (netID, first_name, last_name, dorm))
-    except:
-        return "Insertion failed"
-
-    cnx.commit()
-
-    return "Insertion succeeded"
-
-@app.route('/update', methods = ['POST'])
-def update_student():
-    netID = request.form['netID_u']
-    first_name = request.form['first_name_u']
-    last_name = request.form['last_name_u']
-    dorm = request.form['dorm_u']
-
-    cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
-    cursor = cnx.cursor()
-
-    update = ("UPDATE Students SET first_name = %s, last_name = %s, dorm_name = %s WHERE netID = %s")
-
-    try:
-        cursor.execute(update, (first_name, last_name, dorm, netID))
-    except:
-        return "Update failed"
-
-    cnx.commit()
-
-    return "Update succeeded"
 
 # Return available room list
 @app.route('/floors/images/<netID>/<dorm_name>')
@@ -90,7 +12,7 @@ def get_floorplans(netID, dorm_name):
     path = 'data/floorplans/' + dorm_name;
     files = os.popen('ls ' + path).read();
     filenames = files.split()
-    
+
     # dorm_name is first value in list
     filenames.insert(0, dorm_name);
     return json.dumps(filenames);
@@ -247,16 +169,128 @@ def query_rooms(netID, dorm):
 
     return json.dumps(data)
 
-@app.route('/preferences/<netID>/<dorm>')
+@app.route('/preferences/<netID>/<dorm>', methods = ['GET', 'POST'])
 def query_preferences(netID, dorm):
-    # tmp file for dummy json data
-    filename = '/home/cse30246/aborowsk/tests/test_pref.json'
-    with open(filename, 'r') as jsonFile:
-        data = json.load(jsonFile)
+    if request.method == 'GET':
+        data = {'preferences': []}
 
-    return json.dumps(data)
+        cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
+        cursor = cnx.cursor()
+
+        query = ("SELECT netID, pref_num, room, dorm_name, rm1, rm2, rm3 "
+                 "FROM Preferences "
+                 "WHERE netID = %s "
+                 "ORDER BY pref_num")
+        cursor.execute(query, (netID,))
+
+        for i in cursor:
+            pref = {}
+            pref['netID'] = i[0]
+            pref['pref_num'] = i[1]
+            pref['room'] = i[2]
+            pref['dorm_name'] = i[3]
+
+            if i[4] != None:
+                pref['rm1'] = i[4]
+            else:
+                pref['rm1'] = '---'
+
+            if i[5] != None:
+                pref['rm2'] = i[5]
+            else:
+                pref['rm2'] = '---'
+
+            if i[6] != None:
+                pref['rm3'] = i[6]
+            else:
+                pref['rm3'] = '---'
+
+            data['preferences'].append(pref)
+
+        return json.dumps(data)
+
+    if request.method == 'POST':
+        data = request.data
+        preferences = json.loads(data)
+
+        cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
+        cursor = cnx.cursor()
+
+        # Check that all netID are in Students and all rooms are in Rooms
+        # if not, return error
+        students = set()
+        rooms = set()
+        for pref in preferences['preferences']:
+            rooms.add((pref['dorm_name'], pref['room']))
+            if pref['rm1'] != '---':
+                students.add(pref['rm1'])
+            else:
+                pref['rm1'] = None
+
+            if pref['rm2'] != '---':
+                students.add(pref['rm2'])
+            else:
+                pref['rm2'] = None
+
+            if pref['rm3'] != '---':
+                students.add(pref['rm3'])
+            else:
+                pref['rm3'] = None
+
+        # check that the netID is in Students
+        for student in students:
+            query = ('SELECT * '
+                     'From Students '
+                     'WHERE netID = %s')
+            cursor.execute(query, (student,))
+            if len(cursor.fetchall()) == 0:
+                return "Invalid netID: " + student + " provided"
+
+        # check that the room is in Rooms
+        for room in rooms:
+            query = ('SELECT * '
+                     'FROM Rooms '
+                     'WHERE dorm_name = %s and room_num = %s')
+            cursor.execute(query, (room[0], room[1],))
+            if len(cursor.fetchall()) == 0:
+                return "Invalid room: " + room[0] + "-" + room[1]
+
+
+        # TODO: Make sure student isn't already in Selections
+
+
+        for pref in preferences['preferences']:
+            # Check to see if there already exist an entry for the netID and pref_num
+            query = ('SELECT * '
+                     'FROM Preferences '
+                     'WHERE netID = %s and pref_num = %s')
+            cursor.execute(query, (pref['netID'], pref['pref_num'],))
+
+
+            # TODO: Already exist entry update the entry
+            if len(cursor.fetchall()):
+                update_pref = ("UPDATE Preferences "
+                               "SET room = %s, dorm_name = %s, rm1 = %s, rm2 = %s, rm3 = %s "
+                               "WHERE netID = %s and pref_num = %s")
+                cursor.execute(update_pref, (pref['room'], pref['dorm_name'], pref['rm1'], pref['rm2'], pref['rm3'], pref['netID'], pref['pref_num'],))
+
+            # TODO: No entry exist, insert a new tuple
+            else:
+                add_pref = ("INSERT INTO Preferences "
+                            "(netID, pref_num, room, dorm_name, rm1, rm2, rm3) "
+                            "VALUES (%s, %s, %s, %s, %s, %s, %s)")
+                cursor.execute(add_pref, (pref['netID'], pref['pref_num'], pref['room'], pref['dorm_name'], pref['rm1'], pref['rm2'], pref['rm3'],))
+
+            cnx.commit()
+
+        return "Update successful"
+
+
+
+
 
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5002, debug=True)
+    PORT = int(sys.argv[1].rstrip())
+    app.run(host='0.0.0.0', port=PORT, debug=True)
