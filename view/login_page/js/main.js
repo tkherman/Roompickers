@@ -1,10 +1,4 @@
 
-function login_btn_clicked(){
-    var netid = document.getElementById("netid_login").value;
-    localStorage.netid = netid;
-    location.href = '../html/test.html';
-}
-
 (function ($) {
     "use strict";
 

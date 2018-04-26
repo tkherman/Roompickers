@@ -5,7 +5,7 @@ var roomClicked = "";
 var queueSize = 0;
 
 var NETID = localStorage.netid;
-var DORM_NAME = "";
+var DORM_NAME = localStorage.dorm_name;
 
 function repopulate_rooms(){
 
@@ -585,17 +585,9 @@ function zoom_in_img(imgId){
     }
 }
 
-function set_global_dorm_name(data){
-    var jsonData = JSON.parse(data);
-    DORM_NAME = jsonData["dorm_name"];
-}
-
 
   document.addEventListener("DOMContentLoaded", function() { 
     // this function runs when the DOM is ready
-
-  // set global variable DORM_NAME
-  get_data(ADDR + ":" + PORT + "/signin/"+NETID, set_global_dorm_name);
 
   // populate the floor-buttons and rooms table
   get_data(ADDR + ":" + PORT + "/floors/netid/Zahm", populate_rooms);
