@@ -4,6 +4,9 @@ var PORT = 5002;
 var roomClicked = "";
 var queueSize = 0;
 
+var NETID = localStorage.netid;
+var DORM_NAME = "";
+
 function repopulate_rooms(){
 
     clear_rooms(); // TODO: write the code for this function
@@ -26,7 +29,6 @@ function repopulate_queue(pref_num1, pref_num2){
 
 function delete_preference(pref_num){
     clear_queue();
-    alert(pref_num);
     send_data(
                 'DELETE',
                 ADDR + ":" + PORT + "/preferences/ktong1/Fisher", 
@@ -566,9 +568,34 @@ function populate_rooms(data) {
    }
 }
 
+function zoom_in_img(imgId){
+    var modal = document.getElementById("myModal");
+    var panel = document.getElementsByClassName("item active")[0];
+    var img = panel.childNodes[0];
+    var modalImg = document.getElementById("img01");
+    var captionText = document.getElementById("caption");
+    
+    modal.style.display = "block";
+    modalImg.src = img.src;
+    captionText.innerHTML = img.alt;
+    
+    var span = document.getElementsByClassName("close")[1];
+    span.onclick = function(){
+        modal.style.display = "none";
+    }
+}
+
+function set_global_dorm_name(data){
+    var jsonData = JSON.parse(data);
+    DORM_NAME = jsonData["dorm_name"];
+}
+
 
   document.addEventListener("DOMContentLoaded", function() { 
     // this function runs when the DOM is ready
+
+  // set global variable DORM_NAME
+  get_data(ADDR + ":" + PORT + "/signin/"+NETID, set_global_dorm_name);
 
   // populate the floor-buttons and rooms table
   get_data(ADDR + ":" + PORT + "/floors/netid/Zahm", populate_rooms);
@@ -603,22 +630,4 @@ function populate_rooms(data) {
 
   $('[data-toggle="collapse"]').click(function() {
   $('.collapse.in').collapse('hide')
-});
-
-function zoom_in_img(imgId){
-    var modal = document.getElementById("myModal");
-    var panel = document.getElementsByClassName("item active")[0];
-    var img = panel.childNodes[0];
-    var modalImg = document.getElementById("img01");
-    var captionText = document.getElementById("caption");
-    
-    modal.style.display = "block";
-    modalImg.src = img.src;
-    captionText.innerHTML = img.alt;
-    
-    var span = document.getElementsByClassName("close")[1];
-    span.onclick = function(){
-        modal.style.display = "none";
-    }
-}
-
+    });
