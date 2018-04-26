@@ -160,13 +160,6 @@ def query_rooms(netID, dorm):
         data = json.load(jsonFile)
 
 
-#    for i in cursor:
- #       data['netID'] = i[0]
-  #      data['first_name'] = i[1]
-   #     data['last_name'] = i[2]
-    #    data['dorm'] = i[3]
-
-
     return json.dumps(data)
 
 @app.route('/preferences/<netID>/<dorm>', methods = ['GET', 'POST', 'PUT', 'DELETE'])
@@ -258,7 +251,6 @@ def query_preferences(netID, dorm):
 
         # TODO: Make sure student isn't already in Selections
 
-
         for pref in preferences['preferences']:
             # Check to see if there already exist an entry for the netID and pref_num
             query = ('SELECT * '
@@ -267,39 +259,103 @@ def query_preferences(netID, dorm):
             cursor.execute(query, (pref['netID'], pref['pref_num'],))
 
 
-            # TODO: Already exist entry update the entry
+            # Already exist entry update the entry
             if len(cursor.fetchall()):
                 update_pref = ("UPDATE Preferences "
                                "SET room = %s, dorm_name = %s, rm1 = %s, rm2 = %s, rm3 = %s "
                                "WHERE netID = %s and pref_num = %s")
                 cursor.execute(update_pref, (pref['room'], pref['dorm_name'], pref['rm1'], pref['rm2'], pref['rm3'], pref['netID'], pref['pref_num'],))
 
-            # TODO: No entry exist, insert a new tuple
+            # No entry exist, insert a new tuple
             else:
                 add_pref = ("INSERT INTO Preferences "
-                            "(netID, pref_num, room, dorm_name, rm1, rm2, rm3) "
-                            "VALUES (%s, %s, %s, %s, %s, %s, %s)")
+                            "(netID, pref_num, room, dorm_name, rm1, rm2, rm3) " "VALUES (%s, %s, %s, %s, %s, %s, %s)")
                 cursor.execute(add_pref, (pref['netID'], pref['pref_num'], pref['room'], pref['dorm_name'], pref['rm1'], pref['rm2'], pref['rm3'],))
 
             cnx.commit()
 
         return "Update successful"
 
-    if request.method == 'PUT':
-	# TODO
+    #IN PROGRESS
+    # TODO
         # expect json of the form { pref_num1: n1, pref_num2: n2 }
         # run query: update Preferences set pref_num = n1 where pref_num = n2 and netID = netID and dorm_name = dorm;
+    if request.method == 'PUT':
+        data = request.data
+        preferences = json.loads(data)
+
+        cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
+        cursor = cnx.cursor()
+
+        # check that the netID is in Student
+        query = ('SELECT * '
+                 'From Students '
+                 'WHERE netID = %s')
+        cursor.execute(query, (netID,))
+        if len(cursor.fetchall()) == 0:
+            return "Invalid netID: " + netID + " provided"
+
+        #check that current preference number exists
+        query = ('SELECT * '
+                 'From Preferences '
+                 'WHERE netID = %s and dorm_name = %s and pref_num = %s')
+        cursor.execute(query, (netID, dorm, preferences[pref_num2]))
+        if len(cursor.fetchall()) == 0:
+            return "Invalid preferences number: " + preferences[pref_num2] + " provided"
+
+        #update preference
+        query = ("UPDATE Preferences set pref_num = %s WHERE pref_num = %s and netID = %s and dorm_name = %s;")
+        cursor.execute(query, (preferences["pref_num1"], preferences["pref_num2"], netID, dorm))
 
         return "Update preferences successful"
 
-
-    if request.method == 'DELETE':
-	# TODO
+    #IN PROGRESS
+    # TODO
         # expect json of the form { pref_num1: n }
         # run query: delete from Preferences where netID = netid and dorm_name = dorm and pref_num = n;
+    if request.method == 'DELETE':
+        data = request.data
+        preferences = json.loads(data)
+
+        cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
+        cursor = cnx.cursor()
+
+        # check that the netID is in Student
+            query = ('SELECT * '
+                     'From Students '
+                     'WHERE netID = %s')
+            cursor.execute(query, (netID,))
+            if len(cursor.fetchall()) == 0:
+                return "Invalid netID: " + netID + " provided"
+
+         #check that current preference number exists
+        query = ('SELECT * '
+                 'From Preferences '
+                 'WHERE netID = %s and dorm_name = %s and pref_num = %s')
+        cursor.execute(query, (netID, dorm, preferences[pref_num1]))
+        if len(cursor.fetchall()) == 0:
+            return "Invalid preferences number: " + preferences[pref_num1] + " provided"
+
+        query = ("DELETE FROM Preferences WHERE netID=%s and dorm_name=%s and pref_num=%s;")
+        cursor.execute(query, (netID, dorm, preferences[pref_num1]))
 
         return "Delete preference successful"
 
+
+@app.route('/signin/<netID>/')
+def sign_in(netID):
+    cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
+    cursor = cnx.cursor()
+
+    query = ("SELECT dorm_name FROM Students WHERE netID = %s")
+    cursor.execute(query, (netID,))
+
+    data = {}
+
+    for i in cursor:
+        data['dorm_name'] = i[0]
+
+    return json.dumps(data)
 
 
 
