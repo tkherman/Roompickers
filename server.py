@@ -160,13 +160,6 @@ def query_rooms(netID, dorm):
         data = json.load(jsonFile)
 
 
-#    for i in cursor:
- #       data['netID'] = i[0]
-  #      data['first_name'] = i[1]
-   #     data['last_name'] = i[2]
-    #    data['dorm'] = i[3]
-
-
     return json.dumps(data)
 
 @app.route('/preferences/<netID>/<dorm>', methods = ['GET', 'POST', 'PUT', 'DELETE'])
@@ -267,18 +260,17 @@ def query_preferences(netID, dorm):
             cursor.execute(query, (pref['netID'], pref['pref_num'],))
 
 
-            # TODO: Already exist entry update the entry
+            # Already exist entry update the entry
             if len(cursor.fetchall()):
                 update_pref = ("UPDATE Preferences "
                                "SET room = %s, dorm_name = %s, rm1 = %s, rm2 = %s, rm3 = %s "
                                "WHERE netID = %s and pref_num = %s")
                 cursor.execute(update_pref, (pref['room'], pref['dorm_name'], pref['rm1'], pref['rm2'], pref['rm3'], pref['netID'], pref['pref_num'],))
 
-            # TODO: No entry exist, insert a new tuple
+            # No entry exist, insert a new tuple
             else:
                 add_pref = ("INSERT INTO Preferences "
-                            "(netID, pref_num, room, dorm_name, rm1, rm2, rm3) "
-                            "VALUES (%s, %s, %s, %s, %s, %s, %s)")
+                            "(netID, pref_num, room, dorm_name, rm1, rm2, rm3) " "VALUES (%s, %s, %s, %s, %s, %s, %s)")
                 cursor.execute(add_pref, (pref['netID'], pref['pref_num'], pref['room'], pref['dorm_name'], pref['rm1'], pref['rm2'], pref['rm3'],))
 
             cnx.commit()
@@ -300,6 +292,24 @@ def query_preferences(netID, dorm):
 
         return "Delete preference successful"
 
+
+@app.route('/signin/<netID>/')
+def sign_in(netID):
+    cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
+    cursor = cnx.cursor()
+
+    query = ("SELECT dorm_name FROM Students WHERE netID = %s")
+    cursor.execute(query, (netID,))
+
+    data = {}
+
+    for i in cursor:
+        data['dorm_name'] = i[0]
+
+    return json.dumps(data)
+
+
+    return json.dumps(data)
 
 
 
