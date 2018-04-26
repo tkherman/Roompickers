@@ -1,5 +1,5 @@
 var ADDR = "http://dsg1.crc.nd.edu"
-var PORT = 5002;
+var PORT = 5005;
 
 var roomClicked = "";
 var queueSize = 0;
@@ -10,7 +10,7 @@ function repopulate_rooms(){
     
     var maxCap = document.getElementById("capRange").value;
     var maxSize = document.getElementById("sqftRange").value;
-    get_data(ADDR + ":" + PORT + "/filter/netid/Zahm/"+maxCap+"/0/"+maxSize, populate_rooms);
+    get_data(ADDR + ":" + PORT + "/filter/netid/Fisher/"+maxCap+"/0/"+maxSize, populate_rooms);
 }
 
 function repopulate_queue(pref_num1, pref_num2){
@@ -47,8 +47,11 @@ function commit_preference(){
     var dict = {
             "netID": "ktong1",
             "pref_num": queueSize+1, 
-            "room_num": roomClicked,
+            "room": roomClicked,
             "dorm_name": "Fisher",
+            "rm1": "---",
+            "rm2": "---",
+            "rm3": "---"
         };
 
     for(var i=0; i < num_roommates; i++){
@@ -571,7 +574,7 @@ function populate_rooms(data) {
     // this function runs when the DOM is ready
 
   // populate the floor-buttons and rooms table
-  get_data(ADDR + ":" + PORT + "/floors/netid/Zahm", populate_rooms);
+  get_data(ADDR + ":" + PORT + "/floors/netid/Fisher", populate_rooms);
 
   // populate floor plan images on carousel
   get_data(ADDR + ":" + PORT + "/floors/images/netid/fisher", populate_carousel);
