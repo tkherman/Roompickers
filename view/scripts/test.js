@@ -1,6 +1,8 @@
 var ADDR = "http://dsg1.crc.nd.edu"
 var PORT = 5002;
 
+var roomClicked = "";
+var queueSize = 0;
 
 
 function repopulate_rooms(){
@@ -13,6 +15,36 @@ function repopulate_rooms(){
 }
 
 function commit_preference(){
+    var pref = [];
+
+    var modal_body = document.getElementById("modal-body1");
+    var num_roommates = modal_body.childElementCount;
+    var rm_base = "rm";
+    var rm_tmp = "";
+    var input = "";
+    var dict = {
+            "netID": "ktong1",
+            "pref_num": queueSize+1, 
+            "room_num": roomClicked,
+            "dorm_name": "Fisher",
+        };
+
+    for(var i=0; i < num_roommates; i++){
+        rm_tmp = rm_base + (i+1).toString();
+        input = document.getElementById(rm_tmp).value;
+        dict[rm_tmp] = input; 
+    }
+
+
+    pref.push(dict);
+    var result = {
+        "preferences": pref
+    };
+    console.log(JSON.stringify(result));
+
+    send_data('POST', ADDR + ":" + PORT + "/preferences/ktong1/Fisher", JSON.stringify(result), get_data,  [ADDR + ":" + PORT + "/preferences/ktong1/Fisher", populate_preference_queue]);
+
+}
     /* TODO:
         This function should make a post request to the server 
         some data about the new preference (I'll add a format for this in a little).
@@ -25,16 +57,15 @@ function commit_preference(){
             - issue sometime of error message to the user (netid not in dorm)
             - leave modal open for new input ???
     */
-}
 
 function save_queue(){
 
 }
 
 function save_modal(){
-
+  clear_queue();
   commit_preference();  // TODO: write the code for this function
-  //clear_modal();
+  clear_modal();
 }
 
 function clear_modal(){
@@ -67,12 +98,18 @@ var get_data = function(url, callback) // How can I use this callback?
 }
 
 var populate_modal = function(event){
-    var parent = document.getElementById("modal-body1");
+    var modal_body = document.getElementById("modal-body1");
+    var parent;
     var element;
 
-    var capId = "cap" + event.target.id.substring(6,9);
+    // sets global var for later use
+    roomClicked = event.target.id.substring(6,9);
+    var capId = "cap" + roomClicked;
+    
     var cap = parseInt(document.getElementById(capId).innerText);
     for(var i=1; i<=cap-1; i++){
+        parent = modal_body;
+
         element = document.createElement("div");
         element.className = "form-group";
         parent.appendChild(element);
@@ -84,7 +121,7 @@ var populate_modal = function(event){
 
         element = document.createElement("input");
         element.className = "form-control";
-        element.id = "roommate" + cap;
+        element.id = "rm" + i;
         element.type ="text";
         parent.appendChild(element);
       }
@@ -156,6 +193,7 @@ function populate_carousel(data){
 function populate_preference_queue(data){
     var jsonPrefs = JSON.parse(data);
     var prefsArr = jsonPrefs["preferences"];
+    queueSize = prefsArr.length;
 
     var queue = document.getElementById("queue");
 
@@ -229,7 +267,7 @@ function populate_preference_queue(data){
     parent.appendChild(element);
 
     var parent2;
-    for(var i=0; i <prefsArr.length; i++){
+    for(var i=0; i < queueSize; i++){
         parent = tbody;     // parent is now tbody
 
         element = document.createElement("tr");
@@ -483,7 +521,7 @@ function populate_rooms(data) {
   get_data(ADDR + ":" + PORT + "/floors/images/netid/fisher", populate_carousel);
 
   // populate the current users preference data
-  get_data(ADDR + ":" + PORT + "/preferences/netid/Zahm", populate_preference_queue);
+  get_data(ADDR + ":" + PORT + "/preferences/ktong1/Fisher", populate_preference_queue);
 
   var slider = document.getElementById("capRange");
   var output = document.getElementById("capValue");
