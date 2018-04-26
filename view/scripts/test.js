@@ -1,8 +1,6 @@
 var ADDR = "http://dsg1.crc.nd.edu"
 var PORT = 5002;
 
-
-
 function repopulate_rooms(){
 
     clear_rooms(); // TODO: write the code for this function
@@ -10,6 +8,29 @@ function repopulate_rooms(){
     var maxCap = document.getElementById("capRange").value;
     var maxSize = document.getElementById("sqftRange").value;
     get_data(ADDR + ":" + PORT + "/filter/netid/Zahm/"+maxCap+"/0/"+maxSize, populate_rooms);
+}
+
+function repopulate_queue(pref_num1, pref_num2){
+    clear_queue();
+    send_data(
+                'PUT',
+                ADDR + ":" + PORT + "/preferences/ktong1/Fisher", 
+                "{ pref_num1:"+pref_num1+", pref_num2:"+pref_num2+" }",
+                get_data,
+                [ADDR + ":" + PORT + "/preferences/ktong1/Fisher", populate_preference_queue]
+            );
+}
+
+function delete_preference(pref_num){
+    clear_queue();
+    alert(pref_num);
+    send_data(
+                'DELETE',
+                ADDR + ":" + PORT + "/preferences/ktong1/Fisher", 
+                "{ pref_num:"+pref_num+" }",
+                get_data,
+                [ADDR + ":" + PORT + "/preferences/ktong1/Fisher", populate_preference_queue]
+            );
 }
 
 function commit_preference(){
@@ -27,10 +48,6 @@ function commit_preference(){
     */
 }
 
-function save_queue(){
-
-}
-
 function save_modal(){
 
   commit_preference();  // TODO: write the code for this function
@@ -45,12 +62,32 @@ function clear_modal(){
 }
 
 function clear_rooms(){
-    var accordion = document.getElementById("panel");
-    while (accordion.firstChild) {
-        accordion.removeChild(accordion.firstChild);
+    var panel = document.getElementById("panel");
+    while (panel.firstChild) {
+        panel.removeChild(panel.firstChild);
     } 
 }
 
+function clear_queue(){
+    var queue = document.getElementById("queue");
+    while (queue.firstChild) {
+        queue.removeChild(queue.firstChild);
+    } 
+}
+
+var send_data = function(type, url, data, callback, args)
+{
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function()
+    {
+        if (request.readyState == 4 && request.status == 200)
+        {
+            callback(args[0], args[1]);
+        }
+    }; 
+    request.open(type, url);
+    request.send(data);
+}
 
 var get_data = function(url, callback) // How can I use this callback?
 {
@@ -166,9 +203,16 @@ function populate_preference_queue(data){
     parent = queue;
     // parent is now queue
 
+    //<h4 id="queue-title"> Preference Queue </h4>
+    var queueTitle = document.createElement("h4");
+    queueTitle.id = "queue-title";
+    queueTitle.innerHTML = " Preference Queue ";
+    parent.appendChild(queueTitle);
+
     var table = document.createElement("table");
     element = table;
     element.className = "table table-striped header-fixed2 my-queue-table";
+    element.id = "queue_table_id";
     parent.appendChild(element);
     parent = element;
 
@@ -229,7 +273,7 @@ function populate_preference_queue(data){
     parent.appendChild(element);
 
     var parent2;
-    for(var i=0; i <prefsArr.length; i++){
+    for(var i=0; i <prefsArr.length; i++){          // i = preference num basically
         parent = tbody;     // parent is now tbody
 
         element = document.createElement("tr");
@@ -258,9 +302,14 @@ function populate_preference_queue(data){
         parent = element;  // parent is the table data
 
         element = document.createElement("button");
+        if(i == 0){
+            element.disabled = true;
+        }
         element.className = "btn btn-primary";
         element.type = "button";
         element.title = "Move room up the queue";
+        // i+1 is the actual pref num since this loop starts at i=0
+        $(element).attr("onclick", "repopulate_queue("+(i+1).toString()+", "+i.toString()+")");
         parent.appendChild(element);
         parent = element;   //parent is now the button 
 
@@ -274,9 +323,13 @@ function populate_preference_queue(data){
         parent = element;  // parent is the table data
 
         element = document.createElement("button");
+        if(i == prefsArr.length-1){
+            element.disabled = true;
+        }
         element.className = "btn btn-primary";
         element.type = "button";
         element.title = "Move room down the queue";
+        $(element).attr("onclick", "repopulate_queue("+(i+1).toString()+", "+(i+2).toString()+")");
         parent.appendChild(element);
         parent = element;   //parent is now the button 
 
@@ -309,6 +362,8 @@ function populate_preference_queue(data){
         element.className = "btn btn-danger";
         element.type = "button";
         element.title = "Remove room from queue";
+        element.onclick = function(){ delete_preference(i+1); } // i starts at 0, prefs start at 1, so i+1 = real pref_num
+        $(element).attr("onclick", "delete_preference("+(i+1).toString()+")");
         parent.appendChild(element);
         parent = element;   //parent is now the button 
 
@@ -483,7 +538,7 @@ function populate_rooms(data) {
   get_data(ADDR + ":" + PORT + "/floors/images/netid/fisher", populate_carousel);
 
   // populate the current users preference data
-  get_data(ADDR + ":" + PORT + "/preferences/netid/Zahm", populate_preference_queue);
+  get_data(ADDR + ":" + PORT + "/preferences/ktong1/Fisher", populate_preference_queue);
 
   var slider = document.getElementById("capRange");
   var output = document.getElementById("capValue");

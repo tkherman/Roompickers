@@ -288,7 +288,7 @@ html {
 }
 
 /* The Close Button */
-.close2, #zoomCloseBtn {
+#zoomCloseBtn {
     position: absolute;
     z-index: 3;
     top: 15px;
