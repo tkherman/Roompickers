@@ -309,9 +309,6 @@ def sign_in(netID):
     return json.dumps(data)
 
 
-    return json.dumps(data)
-
-
 
 if __name__ == '__main__':
     PORT = int(sys.argv[1].rstrip())
