@@ -169,7 +169,7 @@ def query_rooms(netID, dorm):
 
     return json.dumps(data)
 
-@app.route('/preferences/<netID>/<dorm>', methods = ['GET', 'POST'])
+@app.route('/preferences/<netID>/<dorm>', methods = ['GET', 'POST', 'PUT', 'DELETE'])
 def query_preferences(netID, dorm):
     if request.method == 'GET':
         data = {'preferences': []}
@@ -285,8 +285,20 @@ def query_preferences(netID, dorm):
 
         return "Update successful"
 
+    if request.method == 'PUT':
+	# TODO
+        # expect json of the form { pref_num1: n1, pref_num2: n2 }
+        # run query: update Preferences set pref_num = n1 where pref_num = n2 and netID = netID and dorm_name = dorm;
+
+        return "Update preferences successful"
 
 
+    if request.method == 'DELETE':
+	# TODO
+        # expect json of the form { pref_num1: n }
+        # run query: delete from Preferences where netID = netid and dorm_name = dorm and pref_num = n;
+
+        return "Delete preference successful"
 
 
 
