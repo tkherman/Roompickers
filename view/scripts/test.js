@@ -4,6 +4,7 @@ var PORT = 5005;
 var roomClicked = "";
 var queueSize = 0;
 var queuePrefNums = [];
+var floorMetadata;
 
 var NETID = localStorage.netid;
 var DORM_NAME = localStorage.dorm_name;
@@ -79,18 +80,10 @@ function commit_preference(){
     send_data('POST', ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, JSON.stringify(result), get_data,  [ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, populate_preference_queue]);
 
 }
-    /* TODO:
-        This function should make a post request to the server 
-        some data about the new preference (I'll add a format for this in a little).
 
-        if the post request was successful:
-            - add that data to the local queue variable
-            - call function to re-populate the queue html
-            - clear & close modal
-        else:
-            - issue sometime of error message to the user (netid not in dorm)
-            - leave modal open for new input ???
-    */
+function lock_room(pref_num){
+
+}
 
 function save_modal(){
   clear_queue();
@@ -247,7 +240,6 @@ function populate_preference_queue(data){
         queuePrefNums[i] = prefsArr[i]["pref_num"];
     }
     queueSize = prefsArr.length;
-    console.log(queuePrefNums);
 
     var queue = document.getElementById("queue");
 
@@ -402,6 +394,7 @@ function populate_preference_queue(data){
         element.className = "btn btn-success";
         element.type = "button";
         element.title = "Lock in this room";
+        $(element).attr("onclick", "lock_room("+queuePrefNums[i].toString()+")");
         parent.appendChild(element);
         parent = element;   //parent is now the button 
 
@@ -431,10 +424,20 @@ function populate_preference_queue(data){
 
 }
 
+function setFloorMetadata(data){
+    floorMetadata = JSON.parse(data);
+
+    // populate the floor-buttons and rooms table
+    get_data(ADDR + ":" + PORT + "/floors/"+NETID+"/"+DORM_NAME, populate_rooms);
+}
+
 function populate_rooms(data) {
-// replace these with actually data using endpoint
-  var minFloor = 1;
-  var floors = 3;
+  console.log(floorMetadata);
+  var minFloor = floorMetadata["min_floor"];
+  var floors = floorMetadata["max_floor"];
+  console.log(minFloor);
+  console.log(floors);
+
   var jsonRooms = JSON.parse(data);
   var roomsArr = jsonRooms["rooms"];
   var room;
@@ -576,6 +579,11 @@ function populate_rooms(data) {
     $(element).attr("data-target", "#GSCCModal");
     $(element).attr("data-toggle", "modal");
     element.innerText = " + ";
+    /*if(room["available"] == "false"){
+        element.disabled = true;
+    }else{
+        element.onclick = populate_modal;
+    }*/
     element.onclick = populate_modal;
     parent3.appendChild(element);
     parent2.appendChild(parent3);
@@ -603,33 +611,31 @@ function zoom_in_img(imgId){
 
   document.addEventListener("DOMContentLoaded", function() { 
     // this function runs when the DOM is ready
+    get_data(ADDR + ":" + PORT + "/floor_metadata/"+NETID+"/"+DORM_NAME, setFloorMetadata); // also populates rooms
 
-  // populate the floor-buttons and rooms table
-  get_data(ADDR + ":" + PORT + "/floors/"+NETID+"/"+DORM_NAME, populate_rooms);
+    // populate floor plan images on carousel
+    get_data(ADDR + ":" + PORT + "/floors/images/"+NETID+"/"+DORM_NAME, populate_carousel);
 
-  // populate floor plan images on carousel
-  get_data(ADDR + ":" + PORT + "/floors/images/netid/fisher", populate_carousel); //TODO fix pictures
+    // populate the current users preference data
+    get_data(ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, populate_preference_queue);
 
-  // populate the current users preference data
-  get_data(ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, populate_preference_queue);
+    var slider = document.getElementById("capRange");
+    var output = document.getElementById("capValue");
+    output.innerHTML = slider.value; // Display the default slider value
 
-  var slider = document.getElementById("capRange");
-  var output = document.getElementById("capValue");
-  output.innerHTML = slider.value; // Display the default slider value
+    // Update the current slider value (each time you drag the slider handle)
+    slider.oninput = function() {
+        output.innerHTML = this.value;
+    }
 
-// Update the current slider value (each time you drag the slider handle)
-  slider.oninput = function() {
-    output.innerHTML = this.value;
-}
+    var slider2 = document.getElementById("sqftRange");
+    var output2 = document.getElementById("sqftValue");
+    output2.innerHTML = slider2.value; // Display the default slider value
 
-  var slider2 = document.getElementById("sqftRange");
-  var output2 = document.getElementById("sqftValue");
-  output2.innerHTML = slider2.value; // Display the default slider value
-
-// Update the current slider value (each time you drag the slider handle)
-  slider2.oninput = function() {
-    output2.innerHTML = this.value;
-}
+    // Update the current slider value (each time you drag the slider handle)
+    slider2.oninput = function() {
+        output2.innerHTML = this.value;
+    }
 
 
 });
