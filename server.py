@@ -295,19 +295,19 @@ def query_preferences(netID, dorm):
 
         #check that current preference number exists
         query = ('SELECT * From Preferences WHERE netID = %s and dorm_name = %s and pref_num = %s')
-        cursor.execute(query, (netID, dorm, preferences[pref_num2]))
+        cursor.execute(query, (netID, dorm, preferences["pref_num2"]))
         if len(cursor.fetchall()) == 0:
-            return "Invalid preferences number: " + preferences[pref_num2] + " provided"
+            return "Invalid preferences number: " + preferences["pref_num2"] + " provided"
 
         #update preference
-        query = ("UPDATE Preferences set pref_num = %s WHERE pref_num = %s and netID = %s and dorm_name = %s;")
+        query = ("UPDATE Preferences set pref_num = %s WHERE pref_num = %s and netID = %s and dorm_name = %s")
         cursor.execute(query, (preferences["pref_num1"], preferences["pref_num2"], netID, dorm))
 
         return "Update preferences successful"
 
     #IN PROGRESS
     # TODO
-        # expect json of the form { pref_num1: n }
+        # expect json of the form { pref_num: n }
         # run query: delete from Preferences where netID = netid and dorm_name = dorm and pref_num = n;
     if request.method == 'DELETE':
         data = request.data
@@ -322,14 +322,14 @@ def query_preferences(netID, dorm):
         if len(cursor.fetchall()) == 0:
             return "Invalid netID: " + netID + " provided"
 
-         #check that current preference number exists
-        query = ('SELECT * From Preferences WHERE netID = %s and dorm_name = %s and pref_num = %s')
-        cursor.execute(query, (netID, dorm, preferences[pref_num1]))
+        #check that current preference number exists
+        query = ('SELECT * From Preferences WHERE netID=%s and dorm_name=%s and pref_num=%s')
+        cursor.execute(query, (netID, dorm, preferences["pref_num"]))
         if len(cursor.fetchall()) == 0:
-            return "Invalid preferences number: " + preferences[pref_num1] + " provided"
+            return "Invalid preferences number: " + preferences["pref_num"] + " provided"
 
-        query = ("DELETE FROM Preferences WHERE netID=%s and dorm_name=%s and pref_num=%s;")
-        cursor.execute(query, (netID, dorm, preferences[pref_num1]))
+        query = ("DELETE FROM Preferences WHERE netID=%s and dorm_name=%s and pref_num=%s")
+        cursor.execute(query, (netID, dorm, preferences["pref_num"]))
 
         return "Delete preference successful"
 
