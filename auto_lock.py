@@ -66,7 +66,18 @@ def select_room(dorm_name, pick, netID):
         update_avail = ("UPDATE Rooms SET available = 0 WHERE dorm_name = %s and room_num = %s")
         cursor.execute(update_avail, (dorm_name, room,))
 
-        # TODO: Take roommates and student out of Picks and Preferences
+        # Take roommates and student out of Picks and Preferences
+        delete_picks = ("DELETE FROM PICKS WHERE netID = %s")
+        delete_prefs = ("DELETE FROM Preferences WHERE netID = %s")
+        cursor.execute(delete_picks, (netID,))
+        cursor.execute(delete_prefs, (netID,))
+        for roommate in rorommates:
+            cursor.execute(delete_picks, (roommate,))
+            cursor.execute(delete_prefs, (roommate,))
+
+    cnx.commit()
+
+    # TODO: WHAT IF NO PREFERENCES ARE AVAILABLE
 
 
 
