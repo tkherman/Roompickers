@@ -3,6 +3,7 @@ var PORT = 5002;
 
 var roomClicked = "";
 var queueSize = 0;
+var lastPrefNum = 0;
 
 var NETID = localStorage.netid;
 var DORM_NAME = localStorage.dorm_name;
@@ -18,10 +19,13 @@ function repopulate_rooms(){
 
 function repopulate_queue(pref_num1, pref_num2){
     clear_queue();
+    var d = {};
+    d["pref_num1"] = pref_num1;
+    d["pref_num2"] = pref_num2;
     send_data(
                 'PUT',
                 ADDR + ":" + PORT + "/preferences/ktong1/Fisher", 
-                "{ pref_num1:"+pref_num1+", pref_num2:"+pref_num2+" }",
+                JSON.stringify(d),
                 get_data,
                 [ADDR + ":" + PORT + "/preferences/ktong1/Fisher", populate_preference_queue]
             );
@@ -29,10 +33,12 @@ function repopulate_queue(pref_num1, pref_num2){
 
 function delete_preference(pref_num){
     clear_queue();
+    var d = {};
+    d["pref_num"] = pref_num;
     send_data(
                 'DELETE',
                 ADDR + ":" + PORT + "/preferences/ktong1/Fisher", 
-                "{ pref_num:"+pref_num+" }",
+                JSON.stringify(d),
                 get_data,
                 [ADDR + ":" + PORT + "/preferences/ktong1/Fisher", populate_preference_queue]
             );
@@ -49,7 +55,7 @@ function commit_preference(){
     var dict = {
             "netID": "ktong1",
             "pref_num": queueSize+1, 
-            "room_num": roomClicked,
+            "room": roomClicked,
             "dorm_name": "Fisher",
         };
 
@@ -230,9 +236,19 @@ function populate_carousel(data){
     }
 }
 
+function max(list){
+    var n = 0;
+    for(var i=0; i<list.length; i++){
+        if(list[i] > n)
+            n = list[i];
+    }
+    return n;
+}
+
 function populate_preference_queue(data){
     var jsonPrefs = JSON.parse(data);
     var prefsArr = jsonPrefs["preferences"];
+    //lastPrefNum = max(prefsArr["pref_num"]);
     queueSize = prefsArr.length;
 
     var queue = document.getElementById("queue");
@@ -596,7 +612,7 @@ function zoom_in_img(imgId){
   get_data(ADDR + ":" + PORT + "/floors/images/netid/fisher", populate_carousel);
 
   // populate the current users preference data
-  get_data(ADDR + ":" + PORT + "/preferences/ktong1/Fisher", populate_preference_queue);
+  get_data(ADDR + ":" + PORT + "/preferences/"+NETID+"/Fisher", populate_preference_queue);
 
   var slider = document.getElementById("capRange");
   var output = document.getElementById("capValue");
