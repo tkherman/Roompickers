@@ -9,7 +9,9 @@ app = Flask(__name__)
 # Return available room list
 @app.route('/floors/images/<netID>/<dorm_name>')
 def get_floorplans(netID, dorm_name):
-    path = 'data/floorplans/' + dorm_name;
+    split = dorm_name.split()
+    split = ''.join(split)
+    path = 'data/floorplans/' + split;
     files = os.popen('ls ' + path).read();
     filenames = files.split()
 
