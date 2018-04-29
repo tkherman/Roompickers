@@ -288,17 +288,13 @@ def query_preferences(netID, dorm):
         cursor = cnx.cursor()
 
         # check that the netID is in Student
-        query = ('SELECT * '
-                 'From Students '
-                 'WHERE netID = %s')
+        query = ('SELECT * From Students WHERE netID = %s')
         cursor.execute(query, (netID,))
         if len(cursor.fetchall()) == 0:
             return "Invalid netID: " + netID + " provided"
 
         #check that current preference number exists
-        query = ('SELECT * '
-                 'From Preferences '
-                 'WHERE netID = %s and dorm_name = %s and pref_num = %s')
+        query = ('SELECT * From Preferences WHERE netID = %s and dorm_name = %s and pref_num = %s')
         cursor.execute(query, (netID, dorm, preferences[pref_num2]))
         if len(cursor.fetchall()) == 0:
             return "Invalid preferences number: " + preferences[pref_num2] + " provided"
@@ -321,17 +317,13 @@ def query_preferences(netID, dorm):
         cursor = cnx.cursor()
 
         # check that the netID is in Student
-            query = ('SELECT * '
-                     'From Students '
-                     'WHERE netID = %s')
+            query = ('SELECT * From Students WHERE netID = %s')
             cursor.execute(query, (netID,))
             if len(cursor.fetchall()) == 0:
                 return "Invalid netID: " + netID + " provided"
 
          #check that current preference number exists
-        query = ('SELECT * '
-                 'From Preferences '
-                 'WHERE netID = %s and dorm_name = %s and pref_num = %s')
+        query = ('SELECT * From Preferences WHERE netID = %s and dorm_name = %s and pref_num = %s')
         cursor.execute(query, (netID, dorm, preferences[pref_num1]))
         if len(cursor.fetchall()) == 0:
             return "Invalid preferences number: " + preferences[pref_num1] + " provided"
