@@ -3,7 +3,7 @@ var PORT = 5005;
 
 var roomClicked = "";
 var queueSize = 0;
-var lastPrefNum = 0;
+var queuePrefNums = [];
 
 var NETID = localStorage.netid;
 var DORM_NAME = localStorage.dorm_name;
@@ -14,7 +14,7 @@ function repopulate_rooms(){
     
     var maxCap = document.getElementById("capRange").value;
     var maxSize = document.getElementById("sqftRange").value;
-    get_data(ADDR + ":" + PORT + "/filter/netid/Fisher/"+maxCap+"/0/"+maxSize, populate_rooms);
+    get_data(ADDR + ":" + PORT + "/filter/"+NETID+"/"+DORM_NAME+"/"+maxCap+"/0/"+maxSize, populate_rooms);
 }
 
 function repopulate_queue(pref_num1, pref_num2){
@@ -24,10 +24,10 @@ function repopulate_queue(pref_num1, pref_num2){
     d["pref_num2"] = pref_num2;
     send_data(
                 'PUT',
-                ADDR + ":" + PORT + "/preferences/ktong1/Fisher", 
+                ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, 
                 JSON.stringify(d),
                 get_data,
-                [ADDR + ":" + PORT + "/preferences/ktong1/Fisher", populate_preference_queue]
+                [ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, populate_preference_queue]
             );
 }
 
@@ -37,10 +37,10 @@ function delete_preference(pref_num){
     d["pref_num"] = pref_num;
     send_data(
                 'DELETE',
-                ADDR + ":" + PORT + "/preferences/ktong1/Fisher", 
+                ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, 
                 JSON.stringify(d),
                 get_data,
-                [ADDR + ":" + PORT + "/preferences/ktong1/Fisher", populate_preference_queue]
+                [ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, populate_preference_queue]
             );
 }
 
@@ -53,10 +53,10 @@ function commit_preference(){
     var rm_tmp = "";
     var input = "";
     var dict = {
-            "netID": "ktong1",
+            "netID": NETID,
             "pref_num": queueSize+1, 
             "room": roomClicked,
-            "dorm_name": "Fisher",
+            "dorm_name": DORM_NAME,
             "rm1": "---",
             "rm2": "---",
             "rm3": "---"
@@ -76,7 +76,7 @@ function commit_preference(){
     };
     console.log(JSON.stringify(result));
 
-    send_data('POST', ADDR + ":" + PORT + "/preferences/ktong1/Fisher", JSON.stringify(result), get_data,  [ADDR + ":" + PORT + "/preferences/ktong1/Fisher", populate_preference_queue]);
+    send_data('POST', ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, JSON.stringify(result), get_data,  [ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, populate_preference_queue]);
 
 }
     /* TODO:
@@ -240,20 +240,14 @@ function populate_carousel(data){
     }
 }
 
-function max(list){
-    var n = 0;
-    for(var i=0; i<list.length; i++){
-        if(list[i] > n)
-            n = list[i];
-    }
-    return n;
-}
-
 function populate_preference_queue(data){
     var jsonPrefs = JSON.parse(data);
     var prefsArr = jsonPrefs["preferences"];
-    //lastPrefNum = max(prefsArr["pref_num"]);
+    for(var i=0; i<prefsArr.length; i++){
+        queuePrefNums[i] = prefsArr[i]["pref_num"];
+    }
     queueSize = prefsArr.length;
+    console.log(queuePrefNums);
 
     var queue = document.getElementById("queue");
 
@@ -365,12 +359,12 @@ function populate_preference_queue(data){
         element = document.createElement("button");
         if(i == 0){
             element.disabled = true;
+        }else{
+            $(element).attr("onclick", "repopulate_queue("+(queuePrefNums[i]).toString()+", "+(queuePrefNums[i-1]).toString()+")");
         }
         element.className = "btn btn-primary";
         element.type = "button";
         element.title = "Move room up the queue";
-        // i+1 is the actual pref num since this loop starts at i=0
-        $(element).attr("onclick", "repopulate_queue("+(i+1).toString()+", "+i.toString()+")");
         parent.appendChild(element);
         parent = element;   //parent is now the button 
 
@@ -386,11 +380,12 @@ function populate_preference_queue(data){
         element = document.createElement("button");
         if(i == prefsArr.length-1){
             element.disabled = true;
+        }else{
+            $(element).attr("onclick", "repopulate_queue("+(queuePrefNums[i]).toString()+", "+(queuePrefNums[i+1]).toString()+")");
         }
         element.className = "btn btn-primary";
         element.type = "button";
         element.title = "Move room down the queue";
-        $(element).attr("onclick", "repopulate_queue("+(i+1).toString()+", "+(i+2).toString()+")");
         parent.appendChild(element);
         parent = element;   //parent is now the button 
 
@@ -423,8 +418,8 @@ function populate_preference_queue(data){
         element.className = "btn btn-danger";
         element.type = "button";
         element.title = "Remove room from queue";
-        element.onclick = function(){ delete_preference(i+1); } // i starts at 0, prefs start at 1, so i+1 = real pref_num
-        $(element).attr("onclick", "delete_preference("+(i+1).toString()+")");
+        //element.onclick = function(){ delete_preference(queuePrefNums[i]); }
+        $(element).attr("onclick", "delete_preference("+(queuePrefNums[i]).toString()+")");
         parent.appendChild(element);
         parent = element;   //parent is now the button 
 
@@ -610,13 +605,13 @@ function zoom_in_img(imgId){
     // this function runs when the DOM is ready
 
   // populate the floor-buttons and rooms table
-  get_data(ADDR + ":" + PORT + "/floors/netid/Fisher", populate_rooms);
+  get_data(ADDR + ":" + PORT + "/floors/"+NETID+"/"+DORM_NAME, populate_rooms);
 
   // populate floor plan images on carousel
-  get_data(ADDR + ":" + PORT + "/floors/images/netid/fisher", populate_carousel);
+  get_data(ADDR + ":" + PORT + "/floors/images/netid/fisher", populate_carousel); //TODO fix pictures
 
   // populate the current users preference data
-  get_data(ADDR + ":" + PORT + "/preferences/"+NETID+"/Fisher", populate_preference_queue);
+  get_data(ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, populate_preference_queue);
 
   var slider = document.getElementById("capRange");
   var output = document.getElementById("capValue");

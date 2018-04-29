@@ -1,5 +1,5 @@
 var ADDR = "http://dsg1.crc.nd.edu";
-var PORT = 5002;
+var PORT = 5005;
 
 function login_btn_clicked(){
     var netid = document.getElementById("netid_login").value;
