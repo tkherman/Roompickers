@@ -1,0 +1,41 @@
+{
+    "preferences": 
+    	[
+    		{
+				"netID": "aborowsk",
+			    "pref_num": 1,
+			    "room_num": "101",
+			    "dorm_name": "Alumni",
+			    "rm1": "dguerra",
+			    "rm2": "ktong1",
+			    "rm3": "tfranceschi"
+	    	},
+	    	{
+				"netID": "aborowsk",
+			    "pref_num": 1,
+			    "room_num": "101",
+			    "dorm_name": "Alumni",
+			    "rm1": "dguerra",
+			    "rm2": "ktong1",
+			    "rm3": "tfranceschi"
+	    	},
+	    	{
+				"netID": "aborowsk",
+			    "pref_num": 1,
+			    "room_num": "101",
+			    "dorm_name": "Alumni",
+			    "rm1": "dguerra",
+			    "rm2": "ktong1",
+			    "rm3": "tfranceschi"
+	    	},
+	    	{
+				"netID": "aborowsk",
+			    "pref_num": 1,
+			    "room_num": "101",
+			    "dorm_name": "Alumni",
+			    "rm1": "dguerra",
+			    "rm2": "ktong1",
+			    "rm3": "tfranceschi"
+	    	}
+	    ]
+}
