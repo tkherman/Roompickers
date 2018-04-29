@@ -49,6 +49,7 @@ def get_rooms(netID, dorm_name):
         room['room_num'] = i[2]
         room['size'] = i[3]
         room['capacity'] = i[4]
+        room['available'] = i[5]
         data['rooms'].append(room)
 
     cursor.close()
@@ -89,6 +90,7 @@ def filter_rooms(netID, dorm_name, capacity, size_min, size_max): #add size filt
         room['room_num'] = i[2]
         room['size'] = i[3]
         room['capacity'] = i[4]
+        room['available'] = i[5]
         data['rooms'].append(room)
 
     cursor.close()
