@@ -174,7 +174,18 @@ function populate_carousel(data){
 
     var floorPlans = JSON.parse(data);
     var dorm = floorPlans[0];
-    var imagePath = "../../data/floorplans/" + dorm + "/";
+    var result = dorm.split(' ').join("");
+    //result.remove("\'");
+    /*var result = "";
+    if(split.length == 1){
+        result = split[0];
+    }else{
+        for(var i=0; i<split.length; i++){
+            result = result + split[i] + "\ ";
+        }
+    }*/
+    console.log(result);
+    var imagePath = "../../data/floorplans/" + result + "/";
 
     var carousel = document.getElementById("myCarousel");
 
