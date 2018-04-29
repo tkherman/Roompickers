@@ -276,7 +276,6 @@ def query_preferences(netID, dorm):
 
         return "Update successful"
 
-    #IN PROGRESS
     # TODO
         # expect json of the form { pref_num1: n1, pref_num2: n2 }
         # run query: update Preferences set pref_num = n1 where pref_num = n2 and netID = netID and dorm_name = dorm;
@@ -302,10 +301,10 @@ def query_preferences(netID, dorm):
         #update preference
         query = ("UPDATE Preferences set pref_num = %s WHERE pref_num = %s and netID = %s and dorm_name = %s")
         cursor.execute(query, (preferences["pref_num1"], preferences["pref_num2"], netID, dorm))
+        cnx.commit()
 
         return "Update preferences successful"
 
-    #IN PROGRESS
     # TODO
         # expect json of the form { pref_num: n }
         # run query: delete from Preferences where netID = netid and dorm_name = dorm and pref_num = n;
@@ -330,7 +329,8 @@ def query_preferences(netID, dorm):
 
         query = ("DELETE FROM Preferences WHERE netID=%s and dorm_name=%s and pref_num=%s")
         cursor.execute(query, (netID, dorm, preferences["pref_num"]))
-
+        cnx.commit()
+        
         return "Delete preference successful"
 
 
