@@ -295,9 +295,9 @@ def query_preferences(netID, dorm):
 
         #check that current preference number exists
         query = ('SELECT * From Preferences WHERE netID = %s and dorm_name = %s and pref_num = %s')
-        cursor.execute(query, (netID, dorm, preferences[pref_num2]))
+        cursor.execute(query, (netID, dorm, preferences["pref_num2"]))
         if len(cursor.fetchall()) == 0:
-            return "Invalid preferences number: " + preferences[pref_num2] + " provided"
+            return "Invalid preferences number: " + preferences["pref_num2"] + " provided"
 
         #update preference
         query = ("UPDATE Preferences set pref_num = %s WHERE pref_num = %s and netID = %s and dorm_name = %s")
@@ -324,12 +324,12 @@ def query_preferences(netID, dorm):
 
         #check that current preference number exists
         query = ('SELECT * From Preferences WHERE netID=%s and dorm_name=%s and pref_num=%s')
-        cursor.execute(query, (netID, dorm, preferences[pref_num]))
+        cursor.execute(query, (netID, dorm, preferences["pref_num"]))
         if len(cursor.fetchall()) == 0:
-            return "Invalid preferences number: " + preferences[pref_num] + " provided"
+            return "Invalid preferences number: " + preferences["pref_num"] + " provided"
 
         query = ("DELETE FROM Preferences WHERE netID=%s and dorm_name=%s and pref_num=%s")
-        cursor.execute(query, (netID, dorm, preferences[pref_num]))
+        cursor.execute(query, (netID, dorm, preferences["pref_num"]))
 
         return "Delete preference successful"
 
