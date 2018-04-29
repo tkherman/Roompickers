@@ -56,6 +56,7 @@ function commit_preference(){
             "rm3": "---"
         };
 
+
     for(var i=0; i < num_roommates; i++){
         rm_tmp = rm_base + (i+1).toString();
         input = document.getElementById(rm_tmp).value;
