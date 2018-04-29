@@ -21,7 +21,7 @@ def get_floorplans(netID, dorm_name):
 @app.route('/floors/<netID>/<dorm_name>')
 def get_rooms(netID, dorm_name):
     mens_dorm = ['Alumni', 'Carroll', 'Dillon', 'Duncan', 'Dunne', 'Fisher',
-                 'Keenan', 'Keough', 'Knott', 'Morrisey', 'O\'Neil Family',
+                 'Keenan', 'Keough', 'Knott', 'Morrissey', 'O\'Neil Family',
                  'Siegfried', 'Sorin', 'St. Edward\'s', 'Stanford', 'Zahm']
     womens_dorm = ['Badin', 'Breen-Phillips', 'Cavanaugh', 'Farley', 'Flaherty',
                    'Howard', 'Lewis', 'Lyons', 'McGlinn', 'Pasquerilla East',
@@ -33,7 +33,7 @@ def get_rooms(netID, dorm_name):
     cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
     cursor = cnx.cursor()
 
-    query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity "
+    query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity, r.available "
             "FROM Rooms r, Selections s "
             "WHERE r.dorm_name = %s and (r.dorm_name <> s.dorm_name or "
                 "r.room_num <> s.room_num)")
@@ -61,7 +61,7 @@ def get_rooms(netID, dorm_name):
 @app.route('/filter/<netID>/<dorm_name>/<capacity>/<size_min>/<size_max>')
 def filter_rooms(netID, dorm_name, capacity, size_min, size_max): #add size filter
     mens_dorm = ['Alumni', 'Carroll', 'Dillon', 'Duncan', 'Dunne', 'Fisher',
-                 'Keenan', 'Keough', 'Knott', 'Morrisey', 'O\'Neil Family',
+                 'Keenan', 'Keough', 'Knott', 'Morrissey', 'O\'Neil Family',
                  'Siegfried', 'Sorin', 'St. Edward\'s', 'Stanford', 'Zahm']
     womens_dorm = ['Badin', 'Breen-Phillips', 'Cavanaugh', 'Farley', 'Flaherty',
                    'Howard', 'Lewis', 'Lyons', 'McGlinn', 'Pasquerilla East',
@@ -74,7 +74,7 @@ def filter_rooms(netID, dorm_name, capacity, size_min, size_max): #add size filt
     cursor = cnx.cursor()
 
     # this query does not filter by floot num
-    query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity "
+    query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity, r.available "
              "FROM Rooms r, Selections s "
              "WHERE r.dorm_name = %s and (r.dorm_name <> s.dorm_name or "
              "r.room_num <> s.room_num) and r.capacity <= %s and "
