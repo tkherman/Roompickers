@@ -83,11 +83,11 @@
         <form>
         <div class="slidecontainer" id="slidecontainer1">
             <input type="range" min="1" max="4" value="4" class="slider" id="capRange">
-            <p class="rangeLabel">Occupants: <span id="capValue"></span></p>
+            <p class="rangeLabel">Max Occupants: <span id="capValue"></span></p>
         </div>
         <div class="slidecontainer" id="slidecontainer2">
             <input type="range" min="150" max="500" value="500" class="slider" id="sqftRange">
-            <p class="rangeLabel">Sqft: <span id="sqftValue"></span></p>
+            <p class="rangeLabel">Max Sqft: <span id="sqftValue"></span></p>
             <!-- TODO: Add functionality so button submit repopulates floors and tables (should change this from a form to pure javascript so the page doesn't have to be refreshed, look at the onclick example at line 36), call repopulate_rooms function -->
             <button type="button" class="btn btn-primary" onclick="repopulate_rooms()">Search</button>
         </div>
