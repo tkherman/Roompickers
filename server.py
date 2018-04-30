@@ -9,7 +9,9 @@ app = Flask(__name__)
 # Return available room list
 @app.route('/floors/images/<netID>/<dorm_name>')
 def get_floorplans(netID, dorm_name):
-    path = 'data/floorplans/' + dorm_name;
+    split = dorm_name.split()
+    split = ''.join(split)
+    path = 'data/floorplans/' + split;
     files = os.popen('ls ' + path).read();
     filenames = files.split()
 
@@ -21,7 +23,7 @@ def get_floorplans(netID, dorm_name):
 @app.route('/floors/<netID>/<dorm_name>')
 def get_rooms(netID, dorm_name):
     mens_dorm = ['Alumni', 'Carroll', 'Dillon', 'Duncan', 'Dunne', 'Fisher',
-                 'Keenan', 'Keough', 'Knott', 'Morrisey', 'O\'Neil Family',
+                 'Keenan', 'Keough', 'Knott', 'Morrissey', 'O\'Neil Family',
                  'Siegfried', 'Sorin', 'St. Edward\'s', 'Stanford', 'Zahm']
     womens_dorm = ['Badin', 'Breen-Phillips', 'Cavanaugh', 'Farley', 'Flaherty',
                    'Howard', 'Lewis', 'Lyons', 'McGlinn', 'Pasquerilla East',
@@ -33,7 +35,7 @@ def get_rooms(netID, dorm_name):
     cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
     cursor = cnx.cursor()
 
-    query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity "
+    query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity, r.available "
             "FROM Rooms r, Selections s "
             "WHERE r.dorm_name = %s and (r.dorm_name <> s.dorm_name or "
                 "r.room_num <> s.room_num)")
@@ -61,7 +63,7 @@ def get_rooms(netID, dorm_name):
 @app.route('/filter/<netID>/<dorm_name>/<capacity>/<size_min>/<size_max>')
 def filter_rooms(netID, dorm_name, capacity, size_min, size_max): #add size filter
     mens_dorm = ['Alumni', 'Carroll', 'Dillon', 'Duncan', 'Dunne', 'Fisher',
-                 'Keenan', 'Keough', 'Knott', 'Morrisey', 'O\'Neil Family',
+                 'Keenan', 'Keough', 'Knott', 'Morrissey', 'O\'Neil Family',
                  'Siegfried', 'Sorin', 'St. Edward\'s', 'Stanford', 'Zahm']
     womens_dorm = ['Badin', 'Breen-Phillips', 'Cavanaugh', 'Farley', 'Flaherty',
                    'Howard', 'Lewis', 'Lyons', 'McGlinn', 'Pasquerilla East',
@@ -74,7 +76,7 @@ def filter_rooms(netID, dorm_name, capacity, size_min, size_max): #add size filt
     cursor = cnx.cursor()
 
     # this query does not filter by floot num
-    query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity "
+    query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity, r.available "
              "FROM Rooms r, Selections s "
              "WHERE r.dorm_name = %s and (r.dorm_name <> s.dorm_name or "
              "r.room_num <> s.room_num) and r.capacity <= %s and "
@@ -298,13 +300,13 @@ def query_preferences(netID, dorm):
         query = ('SELECT * From Preferences WHERE netID = %s and dorm_name = %s and pref_num = %s')
         cursor.execute(query, (netID, dorm, preferences["pref_num2"]))
         if len(cursor.fetchall()) == 0:
-            return "Invalid preferences number: " + preferences["pref_num2"] + " provided"
+            return "Invalid preferences number: " + str(preferences["pref_num2"]) + " provided"
 
         #update preferences
         #nullify 1st pref
         query = ("UPDATE Preferences set pref_num = -1 WHERE pref_num = %s and netID = %s and dorm_name = %s")
         cursor.execute(query, (preferences["pref_num1"], netID, dorm))
-        
+
         #change second to 1st
         query = ("UPDATE Preferences set pref_num = %s WHERE pref_num = %s and netID = %s and dorm_name = %s")
         cursor.execute(query, (preferences["pref_num1"], preferences["pref_num2"], netID, dorm))
@@ -312,7 +314,7 @@ def query_preferences(netID, dorm):
         #change 1st to second
         query = ("UPDATE Preferences set pref_num = %s WHERE pref_num = -1 and netID = %s and dorm_name = %s")
         cursor.execute(query, (preferences["pref_num2"], netID, dorm))
-        
+
         cnx.commit()
 
         return "Update preferences successful"
@@ -337,12 +339,12 @@ def query_preferences(netID, dorm):
         query = ('SELECT * From Preferences WHERE netID=%s and dorm_name=%s and pref_num=%s')
         cursor.execute(query, (netID, dorm, preferences["pref_num"]))
         if len(cursor.fetchall()) == 0:
-            return "Invalid preferences number: " + preferences["pref_num"] + " provided"
+            return "Invalid preferences number: " + str(preferences["pref_num"]) + " provided"
 
         query = ("DELETE FROM Preferences WHERE netID=%s and dorm_name=%s and pref_num=%s")
         cursor.execute(query, (netID, dorm, preferences["pref_num"]))
         cnx.commit()
-        
+
         return "Delete preference successful"
 
     @app.route('lock/<netID>/<dorm>/')

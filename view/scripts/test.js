@@ -4,6 +4,8 @@ var PORT = 5005;
 var roomClicked = "";
 var queueSize = 0;
 var queuePrefNums = [];
+var floorMetadata;
+var num_roommates = 0;
 
 var NETID = localStorage.netid;
 var DORM_NAME = localStorage.dorm_name;
@@ -48,7 +50,7 @@ function commit_preference(){
     var pref = [];
 
     var modal_body = document.getElementById("modal-body1");
-    var num_roommates = modal_body.childElementCount;
+    //var num_roommates = modal_body.childElementCount;
     var rm_base = "rm";
     var rm_tmp = "";
     var input = "";
@@ -79,18 +81,10 @@ function commit_preference(){
     send_data('POST', ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, JSON.stringify(result), get_data,  [ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, populate_preference_queue]);
 
 }
-    /* TODO:
-        This function should make a post request to the server 
-        some data about the new preference (I'll add a format for this in a little).
 
-        if the post request was successful:
-            - add that data to the local queue variable
-            - call function to re-populate the queue html
-            - clear & close modal
-        else:
-            - issue sometime of error message to the user (netid not in dorm)
-            - leave modal open for new input ???
-    */
+function lock_room(pref_num){
+
+}
 
 function save_modal(){
   clear_queue();
@@ -157,22 +151,30 @@ var populate_modal = function(event){
     var capId = "cap" + roomClicked;
     
     var cap = parseInt(document.getElementById(capId).innerText);
-    for(var i=1; i<=cap-1; i++){
+    num_roommates = cap-1;
+    if(cap > 1){
+        for(var i=1; i<=cap-1; i++){
+            parent = modal_body;
+
+            element = document.createElement("div");
+            element.className = "form-group";
+            parent.appendChild(element);
+            parent = element;
+
+            element = document.createElement("label");
+            element.innerText = "Roommate " + i + ":";
+            parent.appendChild(element);
+
+            element = document.createElement("input");
+            element.className = "form-control";
+            element.id = "rm" + i;
+            element.type ="text";
+            parent.appendChild(element);
+          }
+      } else {
         parent = modal_body;
-
-        element = document.createElement("div");
-        element.className = "form-group";
-        parent.appendChild(element);
-        parent = element;
-
-        element = document.createElement("label");
-        element.innerText = "Roommate " + i + ":";
-        parent.appendChild(element);
-
-        element = document.createElement("input");
-        element.className = "form-control";
-        element.id = "rm" + i;
-        element.type ="text";
+        element = document.createElement("p");
+        element.innerText = "Single selected, no roommates need to be entered";
         parent.appendChild(element);
       }
 }
@@ -181,7 +183,18 @@ function populate_carousel(data){
 
     var floorPlans = JSON.parse(data);
     var dorm = floorPlans[0];
-    var imagePath = "../../data/floorplans/" + dorm + "/";
+    var result = dorm.split(' ').join("");
+    //result.remove("\'");
+    /*var result = "";
+    if(split.length == 1){
+        result = split[0];
+    }else{
+        for(var i=0; i<split.length; i++){
+            result = result + split[i] + "\ ";
+        }
+    }*/
+    console.log(result);
+    var imagePath = "../../data/floorplans/" + result + "/";
 
     var carousel = document.getElementById("myCarousel");
 
@@ -247,7 +260,6 @@ function populate_preference_queue(data){
         queuePrefNums[i] = prefsArr[i]["pref_num"];
     }
     queueSize = prefsArr.length;
-    console.log(queuePrefNums);
 
     var queue = document.getElementById("queue");
 
@@ -402,6 +414,7 @@ function populate_preference_queue(data){
         element.className = "btn btn-success";
         element.type = "button";
         element.title = "Lock in this room";
+        $(element).attr("onclick", "lock_room("+queuePrefNums[i].toString()+")");
         parent.appendChild(element);
         parent = element;   //parent is now the button 
 
@@ -426,15 +439,24 @@ function populate_preference_queue(data){
         element = document.createElement("span");
         element.className = "glyphicon glyphicon-remove";
         parent.appendChild(element); 
-
     }
 
 }
 
+function setFloorMetadata(data){
+    floorMetadata = JSON.parse(data);
+
+    // populate the floor-buttons and rooms table
+    get_data(ADDR + ":" + PORT + "/floors/"+NETID+"/"+DORM_NAME, populate_rooms);
+}
+
 function populate_rooms(data) {
-// replace these with actually data using endpoint
-  var minFloor = 1;
-  var floors = 3;
+  console.log(floorMetadata);
+  var minFloor = floorMetadata["min_floor"];
+  var floors = floorMetadata["max_floor"];
+  console.log(minFloor);
+  console.log(floors);
+
   var jsonRooms = JSON.parse(data);
   var roomsArr = jsonRooms["rooms"];
   var room;
@@ -576,6 +598,11 @@ function populate_rooms(data) {
     $(element).attr("data-target", "#GSCCModal");
     $(element).attr("data-toggle", "modal");
     element.innerText = " + ";
+    /*if(room["available"] == "false"){
+        element.disabled = true;
+    }else{
+        element.onclick = populate_modal;
+    }*/
     element.onclick = populate_modal;
     parent3.appendChild(element);
     parent2.appendChild(parent3);
@@ -603,33 +630,34 @@ function zoom_in_img(imgId){
 
   document.addEventListener("DOMContentLoaded", function() { 
     // this function runs when the DOM is ready
+    get_data(ADDR + ":" + PORT + "/floor_metadata/"+NETID+"/"+DORM_NAME, setFloorMetadata); // also populates rooms
 
-  // populate the floor-buttons and rooms table
-  get_data(ADDR + ":" + PORT + "/floors/"+NETID+"/"+DORM_NAME, populate_rooms);
+    // populate floor plan images on carousel
+    get_data(ADDR + ":" + PORT + "/floors/images/"+NETID+"/"+DORM_NAME, populate_carousel);
 
-  // populate floor plan images on carousel
-  get_data(ADDR + ":" + PORT + "/floors/images/netid/fisher", populate_carousel); //TODO fix pictures
+    // populate the current users preference data
+    get_data(ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, populate_preference_queue);
 
-  // populate the current users preference data
-  get_data(ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, populate_preference_queue);
+    var slider = document.getElementById("capRange");
+    var output = document.getElementById("capValue");
+    output.innerHTML = slider.value; // Display the default slider value
 
-  var slider = document.getElementById("capRange");
-  var output = document.getElementById("capValue");
-  output.innerHTML = slider.value; // Display the default slider value
+    // Update the current slider value (each time you drag the slider handle)
+    slider.oninput = function() {
+        output.innerHTML = this.value;
+    }
 
-// Update the current slider value (each time you drag the slider handle)
-  slider.oninput = function() {
-    output.innerHTML = this.value;
-}
+    var slider2 = document.getElementById("sqftRange");
+    var output2 = document.getElementById("sqftValue");
+    output2.innerHTML = slider2.value; // Display the default slider value
 
-  var slider2 = document.getElementById("sqftRange");
-  var output2 = document.getElementById("sqftValue");
-  output2.innerHTML = slider2.value; // Display the default slider value
+    // Update the current slider value (each time you drag the slider handle)
+    slider2.oninput = function() {
+        output2.innerHTML = this.value;
+    }
 
-// Update the current slider value (each time you drag the slider handle)
-  slider2.oninput = function() {
-    output2.innerHTML = this.value;
-}
+    var dorm_label = document.getElementById("dorm");
+    dorm_label.innerText = "Dorm: " + DORM_NAME;
 
 
 });
