@@ -18,6 +18,12 @@ function repopulate_rooms(){
     get_data(ADDR + ":" + PORT + "/filter/"+NETID+"/"+DORM_NAME+"/"+maxCap+"/0/"+maxSize, populate_rooms);
 }
 
+function clear_and_populate_all(){
+    repopulate_rooms();
+    clear_queue();
+    get_data(ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, populate_preference_queue);
+}
+
 function repopulate_queue(pref_num1, pref_num2){
     clear_queue();
     var d = {};
@@ -53,9 +59,13 @@ function commit_preference(){
     var rm_base = "rm";
     var rm_tmp = "";
     var input = "";
+    var preference = 1;
+    if(queuePrefNums.length > 0){
+        preference = queuePrefNums[queuePrefNums.length-1] + 1;
+    }
     var dict = {
             "netID": NETID,
-            "pref_num": queueSize+1, 
+            "pref_num": preference, 
             "room": roomClicked,
             "dorm_name": DORM_NAME,
             "rm1": "---",
@@ -75,14 +85,27 @@ function commit_preference(){
     var result = {
         "preferences": pref
     };
-    console.log(JSON.stringify(result));
 
     send_data('POST', ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, JSON.stringify(result), get_data,  [ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, populate_preference_queue]);
 
 }
 
-function lock_room(pref_num){
+function lock_room(pref_num, roomNum, rm1, rm2, rm3){
+    var confirmation = confirm("Are you sure you want to pick this room? This is a final pick.");
+    if(confirmation == true){
+        console.log("pref num:"+pref_num.toString()+", room num:"+roomNum.toString()+", rm1,2,3:"+rm1.toString()+","+rm2.toString()+","+rm3.toString());
+        var dict = {
+            "netID": NETID,
+            "pref_num": pref_num, 
+            "room": roomNum,
+            "dorm_name": DORM_NAME,
+            "rm1": rm1,
+            "rm2": rm2,
+            "rm3": rm3
+        };
 
+        send_data('POST', ADDR + ":" + PORT + "/lock/"+NETID+"/"+DORM_NAME+"/", JSON.stringify(dict), get_data, [ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, clear_and_populate_all]);
+    }
 }
 
 function save_modal(){
@@ -184,7 +207,7 @@ function populate_carousel(data){
             result = result + split[i] + "\ ";
         }
     }*/
-    console.log(result);
+    //console.log(result);
     var imagePath = "../../data/floorplans/" + result + "/";
 
     var carousel = document.getElementById("myCarousel");
@@ -247,8 +270,10 @@ function populate_carousel(data){
 function populate_preference_queue(data){
     var jsonPrefs = JSON.parse(data);
     var prefsArr = jsonPrefs["preferences"];
+    var rooms = [];
     for(var i=0; i<prefsArr.length; i++){
         queuePrefNums[i] = prefsArr[i]["pref_num"];
+        rooms[i] = prefsArr[i]["room"];
     }
     queueSize = prefsArr.length;
 
@@ -256,7 +281,6 @@ function populate_preference_queue(data){
 
     var parent;
     var element;
-
 
     parent = queue;
     // parent is now queue
@@ -405,7 +429,11 @@ function populate_preference_queue(data){
         element.className = "btn btn-success";
         element.type = "button";
         element.title = "Lock in this room";
-        $(element).attr("onclick", "lock_room("+queuePrefNums[i].toString()+")");
+        $(element).attr("onclick", "lock_room("+queuePrefNums[i].toString()+", "+
+                                                rooms[i].toString()+", \""+
+                                                prefsArr[i]["rm1"].toString()+"\", \""+
+                                                prefsArr[i]["rm2"].toString()+"\", \""+
+                                                prefsArr[i]["rm3"].toString()+"\")");
         parent.appendChild(element);
         parent = element;   //parent is now the button 
 
@@ -422,7 +450,6 @@ function populate_preference_queue(data){
         element.className = "btn btn-danger";
         element.type = "button";
         element.title = "Remove room from queue";
-        //element.onclick = function(){ delete_preference(queuePrefNums[i]); }
         $(element).attr("onclick", "delete_preference("+(queuePrefNums[i]).toString()+")");
         parent.appendChild(element);
         parent = element;   //parent is now the button 
@@ -433,6 +460,7 @@ function populate_preference_queue(data){
 
     }
 
+    //repopulate_rooms();
 }
 
 function setFloorMetadata(data){
@@ -443,11 +471,8 @@ function setFloorMetadata(data){
 }
 
 function populate_rooms(data) {
-  console.log(floorMetadata);
   var minFloor = floorMetadata["min_floor"];
   var floors = floorMetadata["max_floor"];
-  console.log(minFloor);
-  console.log(floors);
 
   var jsonRooms = JSON.parse(data);
   var roomsArr = jsonRooms["rooms"];
@@ -563,6 +588,9 @@ function populate_rooms(data) {
         }  
     
     element = document.createElement("tr");
+    if(room["available"] == 0){
+        element.style.backgroundColor = "#ffaaaa";
+    }
     parent.appendChild(element);
     var parent2 = element;
     // parent is now tr
@@ -590,12 +618,13 @@ function populate_rooms(data) {
     $(element).attr("data-target", "#GSCCModal");
     $(element).attr("data-toggle", "modal");
     element.innerText = " + ";
-    /*if(room["available"] == "false"){
-        element.disabled = true;
+    if(room["available"] == 0){
+        element.className = "btn";
+        element.style.display = "none";
     }else{
         element.onclick = populate_modal;
-    }*/
-    element.onclick = populate_modal;
+    }
+    //element.onclick = populate_modal;
     parent3.appendChild(element);
     parent2.appendChild(parent3);
       
