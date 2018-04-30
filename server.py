@@ -347,54 +347,73 @@ def query_preferences(netID, dorm):
 
         return "Delete preference successful"
 
-    @app.route('lock/<netID>/<dorm>/')
-    def lock_pick(netID, dorm):
+@app.route('lock/<netID>/<dorm>/')
+def lock_pick(netID, dorm):
 
-        data = request.data
-        selection = json.loads(data)
+    data = request.data
+    selection = json.loads(data)
 
-        roommates = [selection["rm1"], selection["rm2"], selection["rm3"]]
+    cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
+    cursor = cnx.cursor()
 
-        cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
-        cursor = cnx.cursor()
+     # Check that the roommates are in Students and not in Selections
+        number_of_roommate = 0
+        roommates = []
+        if selection["rm1"] != "---":
+            number_of_roommate += 1
+            roommates.append(selection["rm1"])
+        if selection["rm2"] != "---":
+            number_of_roommate += 1
+            roommates.append(selection["rm2"])
+        if selection["rm3"] != "---":
+            number_of_roommate += 1
+            roommates.append(selection["rm3"])
 
-        # check that the netID is in Student
-        query = ('SELECT * From Students WHERE netID = %s')
-        cursor.execute(query, (netID,))
-        if len(cursor.fetchall()) == 0:
-            return "Invalid netID: " + netID + " provided"
-
-        #check if room exists and is available
-        query = ('SELECT * From Rooms WHERE dorm_name = %s and room_num = %s and available = 1')
-        cursor.execute(query, (dorm, selection["room"]))
-        if len(cursor.fetchall()) == 0:
-            return "Room not available"
-
-        #check rommates not in selection list
         for roommate in roommates:
-            query = ('SELECT * From Selections WHERE netID = %s')
-            cursor.execute(query, (roommate))
-            if len(cursor.fetchall()) > 0:
-                return "Roommate taken"
+            #Check that all roommates are valid students
+            student_query = ("SELECT * FROM Students "
+                             "WHERE netID = %s")
+            cursor.execute(student_query, (roommate,))
+            if len(cursor.fetachall()) == 0:
+                return "Invalid netID: " + netID + " provided"
 
-        #mark room as not available
-        query = ("UPDATE Rooms set available = 0 WHERE room_num = %s and dorm_name = %s")
+            #Check that no roommates have been taken yet
+            selection_query = ("Select * FROM Selections "
+                               "WHERE netID = %s")
+            cursor.execute(selection_query, (roommate,))
+            if len(cursor.fetchall()) != 0:
+                return "roommate taken"
 
-        #insert all rommates and user into selection list
-        roommates.append(netID)
-        for roommate in roommates:
-            query = ('INSERT into Selections (netID, room_num, dorm_name) values(%s,%s,%s)')
-            cursor.execute(query, (roommate, selection["room_num"], dorm))
+    #check if room exists and is available
+    query = ('SELECT * From Rooms WHERE dorm_name = %s and room_num = %s and available = 1')
+    cursor.execute(query, (dorm, selection["room"]))
+    if len(cursor.fetchall()) == 0:
+        return "Room not available"
 
-        #delete user and rommate preferences
-        for roommate in roommates:
-            query = ("DELETE FROM Preferences WHERE netID=%s and dorm_name=%s")
-            cursor.execute(query, (roommate, dorm))
+    #mark room as not available
+    query = ("UPDATE Rooms set available = 0 WHERE room_num = %s and dorm_name = %s")
+    cursor.execute(query, (selection["room"], dorm))
 
-        #take user and roommates out of picks
-        for roommate in roommates:
-            query = ("DELETE FROM Picks WHERE netID=%s")
-            cursor.execute(query, (roommate))
+
+    #insert all rommates and user into selection list
+    roommates.append(netID)
+    for roommate in roommates:
+        query = ('INSERT into Selections (netID, room_num, dorm_name) values(%s,%s,%s)')
+        cursor.execute(query, (roommate, selection["room_num"], dorm))
+
+    #delete user and rommate preferences
+    for roommate in roommates:
+        query = ("DELETE FROM Preferences WHERE netID=%s and dorm_name=%s")
+        cursor.execute(query, (roommate, dorm))
+
+    #take user and roommates out of picks
+    for roommate in roommates:
+        query = ("DELETE FROM Picks WHERE netID=%s")
+        cursor.execute(query, (roommate))
+
+    cnx.commit()
+    return "Great Success!"
+
 
 @app.route('/signin/<netID>/')
 def sign_in(netID):
