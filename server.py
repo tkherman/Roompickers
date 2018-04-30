@@ -345,6 +345,54 @@ def query_preferences(netID, dorm):
         
         return "Delete preference successful"
 
+    @app.route('lock/<netID>/<dorm>/')
+    def lock_pick(netID, dorm):
+
+        data = request.data
+        selection = json.loads(data)
+
+        roommates = [selection["rm1"], selection["rm2"], selection["rm3"]]
+
+        cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
+        cursor = cnx.cursor()
+
+        # check that the netID is in Student
+        query = ('SELECT * From Students WHERE netID = %s')
+        cursor.execute(query, (netID,))
+        if len(cursor.fetchall()) == 0:
+            return "Invalid netID: " + netID + " provided"
+
+        #check if room exists and is available
+        query = ('SELECT * From Rooms WHERE dorm_name = %s and room_num = %s and available = 1')
+        cursor.execute(query, (dorm, selection["room"]))
+        if len(cursor.fetchall()) == 0:
+            return "Room not available"
+
+        #check rommates not in selection list
+        for roommate in roommates:
+            query = ('SELECT * From Selections WHERE netID = %s')
+            cursor.execute(query, (roommate))
+            if len(cursor.fetchall()) > 0:
+                return "Roommate taken"
+
+        #mark room as not available
+        query = ("UPDATE Rooms set available = 0 WHERE room_num = %s and dorm_name = %s")
+
+        #insert all rommates and user into selection list
+        roommates.append(netID)
+        for roommate in roommates:
+            query = ('INSERT into Selections (netID, room_num, dorm_name) values(%s,%s,%s)')
+            cursor.execute(query, (roommate, selection["room_num"], dorm))
+
+        #delete user and rommate preferences
+        for roommate in roommates:
+            query = ("DELETE FROM Preferences WHERE netID=%s and dorm_name=%s")
+            cursor.execute(query, (roommate, dorm))
+
+        #take user and roommates out of picks
+        for roommate in roommates:
+            query = ("DELETE FROM Picks WHERE netID=%s")
+            cursor.execute(query, (roommate))
 
 @app.route('/signin/<netID>/')
 def sign_in(netID):
