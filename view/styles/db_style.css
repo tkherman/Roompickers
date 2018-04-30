@@ -75,23 +75,23 @@ html {
 }
 
 .floor-button{
-	width: 450px;
-	margin-left: 5%;
+	width: 500px;
+	margin-left: 1.5%;
 
 }
 
 
 
 .my-table{
-	width: 450px;
+	width: 500px;
     max-height: 95px;
-	margin-left: 43%;
+	margin-left: 39%;
 	margin-right: 0;
     margin-bottom: 10px;
 }
 
 .mydiv {
-	margin-left: 40%;
+	margin-left: 38%;
 	margin-right: 5px;
     max-height: 25px;
     margin-top:10px;
@@ -99,7 +99,7 @@ html {
 
 .slidecontainer {
     width: 14%;
-    margin-top: 125px;
+    margin-top: 140px;
     margin-left: 5px;
     height: 150px;
     width: 250px;
@@ -161,8 +161,8 @@ html {
 
 .infocontainer{
     position:absolute;
-    top: 25px;
-    right: 125px;
+    top: 0px;
+    right: 40px;
 }
 
 .rangeLabel{
