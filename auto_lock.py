@@ -67,12 +67,12 @@ def select_room(dorm_name, pick, netID):
         cursor.execute(update_avail, (dorm_name, room,))
 
         # Take roommates and student out of Picks and Preferences
-        delete_picks = ("DELETE FROM PICKS WHERE netID = %s")
+        lock_picks = ("UPDATE Picks SET locked = 1 WHERE netID = %s")
         delete_prefs = ("DELETE FROM Preferences WHERE netID = %s")
-        cursor.execute(delete_picks, (netID,))
+        cursor.execute(lock_picks, (netID,))
         cursor.execute(delete_prefs, (netID,))
         for roommate in rorommates:
-            cursor.execute(delete_picks, (roommate,))
+            cursor.execute(lock_picks, (roommate,))
             cursor.execute(delete_prefs, (roommate,))
 
     cnx.commit()
