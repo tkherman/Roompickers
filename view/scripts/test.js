@@ -610,6 +610,15 @@ function populate_rooms(data) {
    }
 }
 
+function populate_picktime(data){
+    var picktime = JSON.parse(data);
+    var picktime_label = document.getElementById("pickstart");
+    picktime_label.innerText = "Start: " + picktime["start"];
+
+    var picktime_label = document.getElementById("pickend");
+    picktime_label.innerText = "End: " + picktime["end"];
+}
+
 function zoom_in_img(imgId){
     var modal = document.getElementById("myModal");
     var panel = document.getElementsByClassName("item active")[0];
@@ -658,6 +667,10 @@ function zoom_in_img(imgId){
 
     var dorm_label = document.getElementById("dorm");
     dorm_label.innerText = "Dorm: " + DORM_NAME;
+
+    get_data(ADDR + ":" + PORT + "/time/"+NETID+"/"+DORM_NAME, populate_picktime);
+
+    
 
 
 });
