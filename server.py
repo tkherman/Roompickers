@@ -374,6 +374,8 @@ def lock_pick(netID, dorm):
     if selection["rm3"] != "---":
         number_of_roommate += 1
         roommates.append(selection["rm3"])
+    
+    roommates.append(netID)
 
     # Check if user has locked a room
     selection_query = ("Select * FROM Selections "
@@ -408,7 +410,6 @@ def lock_pick(netID, dorm):
     cursor.execute(query, (selection["room"], dorm))
 
     #insert all roommates and user into selection list
-    roommates.append(netID)
     for roommate in roommates:
         query = ('INSERT into Selections (netID, room_num, dorm_name) values(%s,%s,%s)')
         cursor.execute(query, (roommate, selection["room"], dorm))
