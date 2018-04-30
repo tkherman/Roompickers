@@ -99,7 +99,10 @@ html {
 
 .slidecontainer {
     width: 14%;
+    margin-top: 125px;
     margin-left: 5px;
+    height: 150px;
+    width: 250px;
 }
 
 .slider {
@@ -141,6 +144,7 @@ html {
 	right: 25px;
     padding-top: 5px;
 	padding-left: 5px;
+    border-top: 2pt solid #01013a;
 	border-left: 2pt solid #01013a;
 }
 
@@ -153,6 +157,12 @@ html {
 	padding-bottom: 5px;
 	border-left: 2pt solid #01013a;
 	border-bottom: 2pt solid #01013a;
+}
+
+.infocontainer{
+    position:absolute;
+    top: 25px;
+    right: 125px;
 }
 
 .rangeLabel{
