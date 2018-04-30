@@ -36,9 +36,8 @@ def get_rooms(netID, dorm_name):
     cursor = cnx.cursor()
 
     query = ("SELECT r.dorm_name, r.floor_num, r.room_num, r.size, r.capacity, r.available "
-            "FROM Rooms r, Selections s "
-            "WHERE r.dorm_name = %s and (r.dorm_name <> s.dorm_name or "
-                "r.room_num <> s.room_num)")
+            "FROM Rooms r"
+            "WHERE r.dorm_name = %s")
 
     cursor.execute(query, (dorm_name,))
 
