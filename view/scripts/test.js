@@ -5,6 +5,7 @@ var roomClicked = "";
 var queueSize = 0;
 var queuePrefNums = [];
 var floorMetadata;
+var num_roommates = 0;
 
 var NETID = localStorage.netid;
 var DORM_NAME = localStorage.dorm_name;
@@ -55,7 +56,7 @@ function commit_preference(){
     var pref = [];
 
     var modal_body = document.getElementById("modal-body1");
-    var num_roommates = modal_body.childElementCount;
+    //var num_roommates = modal_body.childElementCount;
     var rm_base = "rm";
     var rm_tmp = "";
     var input = "";
@@ -173,22 +174,30 @@ var populate_modal = function(event){
     var capId = "cap" + roomClicked;
     
     var cap = parseInt(document.getElementById(capId).innerText);
-    for(var i=1; i<=cap-1; i++){
+    num_roommates = cap-1;
+    if(cap > 1){
+        for(var i=1; i<=cap-1; i++){
+            parent = modal_body;
+
+            element = document.createElement("div");
+            element.className = "form-group";
+            parent.appendChild(element);
+            parent = element;
+
+            element = document.createElement("label");
+            element.innerText = "Roommate " + i + ":";
+            parent.appendChild(element);
+
+            element = document.createElement("input");
+            element.className = "form-control";
+            element.id = "rm" + i;
+            element.type ="text";
+            parent.appendChild(element);
+          }
+      } else {
         parent = modal_body;
-
-        element = document.createElement("div");
-        element.className = "form-group";
-        parent.appendChild(element);
-        parent = element;
-
-        element = document.createElement("label");
-        element.innerText = "Roommate " + i + ":";
-        parent.appendChild(element);
-
-        element = document.createElement("input");
-        element.className = "form-control";
-        element.id = "rm" + i;
-        element.type ="text";
+        element = document.createElement("p");
+        element.innerText = "Single selected, no roommates need to be entered";
         parent.appendChild(element);
       }
 }
@@ -457,7 +466,6 @@ function populate_preference_queue(data){
         element = document.createElement("span");
         element.className = "glyphicon glyphicon-remove";
         parent.appendChild(element); 
-
     }
 
     //repopulate_rooms();
@@ -676,6 +684,9 @@ function zoom_in_img(imgId){
     slider2.oninput = function() {
         output2.innerHTML = this.value;
     }
+
+    var dorm_label = document.getElementById("dorm");
+    dorm_label.innerText = "Dorm: " + DORM_NAME;
 
 
 });
