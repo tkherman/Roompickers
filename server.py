@@ -347,7 +347,7 @@ def query_preferences(netID, dorm):
 
         return "Delete preference successful"
 
-@app.route('lock/<netID>/<dorm>/')
+@app.route('/lock/<netID>/<dorm>/')
 def lock_pick(netID, dorm):
 
     data = request.data
@@ -357,32 +357,32 @@ def lock_pick(netID, dorm):
     cursor = cnx.cursor()
 
      # Check that the roommates are in Students and not in Selections
-        number_of_roommate = 0
-        roommates = []
-        if selection["rm1"] != "---":
-            number_of_roommate += 1
-            roommates.append(selection["rm1"])
-        if selection["rm2"] != "---":
-            number_of_roommate += 1
-            roommates.append(selection["rm2"])
-        if selection["rm3"] != "---":
-            number_of_roommate += 1
-            roommates.append(selection["rm3"])
+    number_of_roommate = 0
+    roommates = []
+    if selection["rm1"] != "---":
+        number_of_roommate += 1
+        roommates.append(selection["rm1"])
+    if selection["rm2"] != "---":
+        number_of_roommate += 1
+        roommates.append(selection["rm2"])
+    if selection["rm3"] != "---":
+        number_of_roommate += 1
+        roommates.append(selection["rm3"])
 
-        for roommate in roommates:
-            #Check that all roommates are valid students
-            student_query = ("SELECT * FROM Students "
-                             "WHERE netID = %s")
-            cursor.execute(student_query, (roommate,))
-            if len(cursor.fetachall()) == 0:
-                return "Invalid netID: " + netID + " provided"
+    for roommate in roommates:
+        #Check that all roommates are valid students
+        student_query = ("SELECT * FROM Students "
+                         "WHERE netID = %s")
+        cursor.execute(student_query, (roommate,))
+        if len(cursor.fetachall()) == 0:
+            return "Invalid netID: " + netID + " provided"
 
-            #Check that no roommates have been taken yet
-            selection_query = ("Select * FROM Selections "
-                               "WHERE netID = %s")
-            cursor.execute(selection_query, (roommate,))
-            if len(cursor.fetchall()) != 0:
-                return "roommate taken"
+        #Check that no roommates have been taken yet
+        selection_query = ("Select * FROM Selections "
+                           "WHERE netID = %s")
+        cursor.execute(selection_query, (roommate,))
+        if len(cursor.fetchall()) != 0:
+            return "roommate taken"
 
     #check if room exists and is available
     query = ('SELECT * From Rooms WHERE dorm_name = %s and room_num = %s and available = 1')
