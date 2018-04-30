@@ -356,7 +356,7 @@ def lock_pick(netID, dorm):
     cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
     cursor = cnx.cursor()
 
-     # Check that the roommates are in Students and not in Selections
+    # Check that the roommates are in Students and not in Selections
     number_of_roommate = 0
     roommates = []
     if selection["rm1"] != "---":
@@ -394,21 +394,20 @@ def lock_pick(netID, dorm):
     query = ("UPDATE Rooms set available = 0 WHERE room_num = %s and dorm_name = %s")
     cursor.execute(query, (selection["room"], dorm))
 
-
-    #insert all rommates and user into selection list
+    #insert all roommates and user into selection list
     roommates.append(netID)
     for roommate in roommates:
         query = ('INSERT into Selections (netID, room_num, dorm_name) values(%s,%s,%s)')
         cursor.execute(query, (roommate, selection["room_num"], dorm))
 
-    #delete user and rommate preferences
+    #delete user and roommate preferences
     for roommate in roommates:
         query = ("DELETE FROM Preferences WHERE netID=%s and dorm_name=%s")
         cursor.execute(query, (roommate, dorm))
 
-    #take user and roommates out of picks
+    #set user pick locked = 1 as done
     for roommate in roommates:
-        query = ("DELETE FROM Picks WHERE netID=%s")
+        query = ("UPDATE Picks set locked = 1 WHERE netID=%s")
         cursor.execute(query, (roommate))
 
     cnx.commit()
