@@ -347,7 +347,7 @@ def query_preferences(netID, dorm):
 
         return "Delete preference successful"
 
-@app.route('lock/<netID>/<dorm>/')
+@app.route('/lock/<netID>/<dorm>/')
 def lock_pick(netID, dorm):
 
     data = request.data
