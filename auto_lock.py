@@ -1,5 +1,5 @@
 import mysql.connector
-import datetime
+from datetime import datetime
 
 cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
 cursor = cnx.cursor()
@@ -8,15 +8,16 @@ def select_room(dorm_name, pick, netID):
     # Query the preferences for the student with netID
     pref_query = ("SELECT * FROM Preferences "
                   "WHERE netID = %s and dorm_name = %s "
-                  "ORDER BY pref_num"
+                  "ORDER BY pref_num")
     cursor.execute(pref_query, (netID, dorm_name,))
 
-    prefs = cursor.fetachall()
-
+    prefs = cursor.fetchall()
+    print "Going through Preferences for", netID
     # Go through the preferences, and lock in the first preference that is available
     for (netID, pref_num, room, dorm_name, rm1, rm2, rm3) in prefs:
+        print netID, pref_num, room, dorm_name
         available_query = ("SELECT available FROM Rooms "
-                           "WHERE dorm_name = %s and room = %s")
+                           "WHERE dorm_name = %s and room_num = %s")
         cursor.execute(available_query, (dorm_name, room,))
 
         # continue to next preference if the room is not available
@@ -26,13 +27,13 @@ def select_room(dorm_name, pick, netID):
         # Check that the roommates are in Students and not in Selections
         number_of_roommate = 0
         roommates = []
-        if rm1 != "---":
+        if rm1 != None:
             number_of_roommate += 1
             roommates.append[rm1]
-        if rm2 != "---":
+        if rm2 != None:
             number_of_roommate += 1
             roommates.append[rm2]
-        if rm3 != "---":
+        if rm3 != None:
             number_of_roommate += 1
             roommates.append[rm3]
 
@@ -66,12 +67,12 @@ def select_room(dorm_name, pick, netID):
         update_avail = ("UPDATE Rooms SET available = 0 WHERE dorm_name = %s and room_num = %s")
         cursor.execute(update_avail, (dorm_name, room,))
 
-        # Take roommates and student out of Picks and Preferences
+        # Take roommates and student out of Preferences and set Picks as locked
         lock_picks = ("UPDATE Picks SET locked = 1 WHERE netID = %s")
         delete_prefs = ("DELETE FROM Preferences WHERE netID = %s")
         cursor.execute(lock_picks, (netID,))
         cursor.execute(delete_prefs, (netID,))
-        for roommate in rorommates:
+        for roommate in roommates:
             cursor.execute(lock_picks, (roommate,))
             cursor.execute(delete_prefs, (roommate,))
 
@@ -85,16 +86,19 @@ def main():
     # Run through Picks to see if, for any students, the end time has passed and
     # they haven't locked in.
     pick_query = ("SELECT dorm_name, pick, netID, end FROM Picks "
-                  "WHERE locked = 0"
+                  "WHERE locked = 0")
     cursor.execute(pick_query)
+
+    i = 0
 
     picks = cursor.fetchall()
     for (dorm_name, pick, netID, end) in picks:
         # Load end as datetime object
         end_time = datetime.strptime(end, '%Y-%m-%d %H:%M:%S')
         # Auto pick for the student
-        if end_time > datetime.now():
+        if end_time <= datetime.now():
             select_room(dorm_name, pick, netID)
+
 
 if __name__ == "__main__":
     main()
