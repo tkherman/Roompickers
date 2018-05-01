@@ -427,6 +427,23 @@ def lock_pick(netID, dorm):
     cnx.commit()
     return "0 Great Success!"
 
+@app.route('/selection/<netID>/')
+def get_selection(netID):
+    cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
+    cursor = cnx.cursor()
+
+    query = ("SELECT room_num FROM Selections WHERE netID = %s")
+    cursor.execute(query, (netID,))
+
+    data = {}
+    if len(cursor.fetchall()) == 0:
+        data['room'] = ''
+        return json.dumps(data)
+
+    for i in cursor:
+        data['room'] = i[0]
+
+    return json.dumps(data)
 
 @app.route('/signin/<netID>/')
 def sign_in(netID):
