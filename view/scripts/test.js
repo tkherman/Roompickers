@@ -648,6 +648,12 @@ function populate_picktime(data){
     picktime_label.innerText = "End: " + picktime["end"];
 }
 
+function populate_room_pick(data){
+    var room = JSON.parse(data);
+    var room_label = document.getElementById("roompick");
+    room_label.innerText = "Room: " + room["room"];
+}
+
 function zoom_in_img(imgId){
     var modal = document.getElementById("myModal");
     var panel = document.getElementsByClassName("item active")[0];
@@ -699,7 +705,8 @@ function zoom_in_img(imgId){
 
     get_data(ADDR + ":" + PORT + "/time/"+NETID+"/"+DORM_NAME, populate_picktime);
 
-    
+    get_data(ADDR + ":" + PORT + "/selection/", populate_room_pick);
+
 
 
 });

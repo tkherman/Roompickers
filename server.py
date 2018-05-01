@@ -31,7 +31,7 @@ def get_rooms(netID, dorm_name):
                    'Pasquerilla West', 'Ryan', 'Walsh', 'Welsh Family']
 
     if dorm_name not in mens_dorm and dorm_name not in womens_dorm:
-        return "Invalid dorm name"
+        return "1 Invalid dorm name"
 
     cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
     cursor = cnx.cursor()
@@ -70,7 +70,7 @@ def filter_rooms(netID, dorm_name, capacity, size_min, size_max): #add size filt
                    'Pasquerilla West', 'Ryan', 'Walsh', 'Welsh Family']
 
     if dorm_name not in mens_dorm and dorm_name not in womens_dorm:
-        return "Invalid dorm name"
+        return "1 Invalid dorm name"
 
     cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
     cursor = cnx.cursor()
@@ -240,7 +240,7 @@ def query_preferences(netID, dorm):
                      'WHERE netID = %s')
             cursor.execute(query, (student,))
             if len(cursor.fetchall()) == 0:
-                return "Invalid netID: " + student + " provided"
+                return "1 Invalid netID: " + student + " provided"
 
         # check that the room is in Rooms
         for room in rooms:
@@ -249,7 +249,7 @@ def query_preferences(netID, dorm):
                      'WHERE dorm_name = %s and room_num = %s')
             cursor.execute(query, (room[0], room[1],))
             if len(cursor.fetchall()) == 0:
-                return "Invalid room: " + room[0] + "-" + room[1]
+                return "1 Invalid room: " + room[0] + "-" + room[1]
 
 
         # TODO: Make sure student isn't already in Selections
@@ -285,7 +285,7 @@ def query_preferences(netID, dorm):
 
             cnx.commit()
 
-        return "Update successful"
+        return "0 Update successful"
 
     # TODO
         # expect json of the form { pref_num1: n1, pref_num2: n2 }
@@ -301,13 +301,13 @@ def query_preferences(netID, dorm):
         query = ('SELECT * From Students WHERE netID = %s')
         cursor.execute(query, (netID,))
         if len(cursor.fetchall()) == 0:
-            return "Invalid netID: " + netID + " provided"
+            return "1 Invalid netID: " + netID + " provided"
 
         #check that current preference number exists
         query = ('SELECT * From Preferences WHERE netID = %s and dorm_name = %s and pref_num = %s')
         cursor.execute(query, (netID, dorm, preferences["pref_num2"]))
         if len(cursor.fetchall()) == 0:
-            return "Invalid preferences number: " + str(preferences["pref_num2"]) + " provided"
+            return "1 Invalid preferences number: " + str(preferences["pref_num2"]) + " provided"
 
         #update preferences
         #nullify 1st pref
@@ -324,7 +324,7 @@ def query_preferences(netID, dorm):
 
         cnx.commit()
 
-        return "Update preferences successful"
+        return "0 Update preferences successful"
 
     # TODO
         # expect json of the form { pref_num: n }
@@ -340,19 +340,19 @@ def query_preferences(netID, dorm):
         query = ('SELECT * From Students WHERE netID = %s')
         cursor.execute(query, (netID,))
         if len(cursor.fetchall()) == 0:
-            return "Invalid netID: " + netID + " provided"
+            return "1 Invalid netID: " + netID + " provided"
 
         #check that current preference number exists
         query = ('SELECT * From Preferences WHERE netID=%s and dorm_name=%s and pref_num=%s')
         cursor.execute(query, (netID, dorm, preferences["pref_num"]))
         if len(cursor.fetchall()) == 0:
-            return "Invalid preferences number: " + str(preferences["pref_num"]) + " provided"
+            return "0 Invalid preferences number: " + str(preferences["pref_num"]) + " provided"
 
         query = ("DELETE FROM Preferences WHERE netID=%s and dorm_name=%s and pref_num=%s")
         cursor.execute(query, (netID, dorm, preferences["pref_num"]))
         cnx.commit()
 
-        return "Delete preference successful"
+        return "0 Delete preference successful"
 
 @app.route('/lock/<netID>/<dorm>/', methods = ['POST'])
 def lock_pick(netID, dorm):
@@ -397,7 +397,7 @@ def lock_pick(netID, dorm):
                        "WHERE netID = %s")
     cursor.execute(selection_query, (netID,))
     if len(cursor.fetchall()) != 0:
-        return "User has already locked in a room"
+        return "1 User has already locked in a room"
 
     for roommate in roommates:
         #Check that all roommates are valid students
@@ -405,20 +405,20 @@ def lock_pick(netID, dorm):
                          "WHERE netID = %s")
         cursor.execute(student_query, (roommate,))
         if len(cursor.fetchall()) == 0:
-            return "Invalid netID: " + netID + " provided"
+            return "1 Invalid netID: " + netID + " provided"
 
         #Check that no roommates have been taken yet
         selection_query = ("Select * FROM Selections "
                            "WHERE netID = %s")
         cursor.execute(selection_query, (roommate,))
         if len(cursor.fetchall()) != 0:
-            return "roommate taken"
+            return "1 roommate taken"
 
     #check if room exists and is available
     query = ('SELECT * From Rooms WHERE dorm_name = %s and room_num = %s and available = 1')
     cursor.execute(query, (dorm, selection["room"]))
     if len(cursor.fetchall()) == 0:
-        return "Room not available"
+        return "1 Room not available"
 
     #mark room as not available
     query = ("UPDATE Rooms set available = 0 WHERE room_num = %s and dorm_name = %s")
@@ -440,8 +440,25 @@ def lock_pick(netID, dorm):
         cursor.execute(query, (roommate,))
 
     cnx.commit()
-    return "Great Success!"
+    return "0 Great Success!"
 
+@app.route('/selection/<netID>/')
+def get_selection(netID):
+    cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
+    cursor = cnx.cursor()
+
+    query = ("SELECT room_num FROM Selections WHERE netID = %s")
+    cursor.execute(query, (netID,))
+
+    data = {}
+    if len(cursor.fetchall()) == 0:
+        data['room'] = ''
+        return json.dumps(data)
+
+    for i in cursor:
+        data['room'] = i[0]
+
+    return json.dumps(data)
 
 @app.route('/signin/<netID>/')
 def sign_in(netID):
