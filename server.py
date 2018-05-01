@@ -451,13 +451,15 @@ def get_selection(netID):
     cursor.execute(query, (netID,))
 
     data = {}
-    if len(cursor.fetchall()) == 0:
+    results = cursor.fetchall()
+    if len(results) == 0:
         data['room'] = ''
         return json.dumps(data)
 
-    for i in cursor:
+    for i in results:
         data['room'] = i[0]
 
+    print data
     return json.dumps(data)
 
 @app.route('/signin/<netID>/')
