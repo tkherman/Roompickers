@@ -1,4 +1,5 @@
 from flask import Flask, request
+from datetime import datetime
 import mysql.connector
 import json
 import sys
@@ -362,6 +363,20 @@ def lock_pick(netID, dorm):
     cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
     cursor = cnx.cursor()
 
+    # Check that user is locking in his time period
+    """time_query = ("SELECT start, end "
+                  "FROM Picks "
+                  "WHERE netID = %s")
+    cursor.execute(time_query, (netID,))
+    r = cursor.fetchall()[0]
+    start = datetime.strptime(r[0], '%Y-%m-%d %H:%M:%S')
+    end = datetime.strptime(r[1], '%Y-%m-%d %H:%M:%S')
+    now = datetime.now()
+    if now < start:
+        return "It's not user's pick time yet"
+    elif now > end:
+        return "User's pick time has passed"""
+
     # Check that the roommates are in Students and not in Selections
     number_of_roommate = 0
     roommates = []
@@ -374,7 +389,7 @@ def lock_pick(netID, dorm):
     if selection["rm3"] != "---":
         number_of_roommate += 1
         roommates.append(selection["rm3"])
-    
+
     roommates.append(netID)
 
     # Check if user has locked a room
@@ -427,6 +442,23 @@ def lock_pick(netID, dorm):
     cnx.commit()
     return "0 Great Success!"
 
+@app.route('/selection/<netID>/')
+def get_selection(netID):
+    cnx = mysql.connector.connect(user='ktong1', password='pw', host='localhost', database='ktong1')
+    cursor = cnx.cursor()
+
+    query = ("SELECT room_num FROM Selections WHERE netID = %s")
+    cursor.execute(query, (netID,))
+
+    data = {}
+    if len(cursor.fetchall()) == 0:
+        data['room'] = ''
+        return json.dumps(data)
+
+    for i in cursor:
+        data['room'] = i[0]
+
+    return json.dumps(data)
 
 @app.route('/signin/<netID>/')
 def sign_in(netID):
