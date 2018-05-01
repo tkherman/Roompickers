@@ -23,7 +23,7 @@ function clear_and_populate_all(){
     repopulate_rooms();
     clear_queue();
     get_data(ADDR + ":" + PORT + "/preferences/"+NETID+"/"+DORM_NAME, populate_preference_queue);
-    get_data(ADDR + ":" + PORT + "/selection/", populate_room_pick);
+    get_data(ADDR + ":" + PORT + "/selection/"+NETID+, populate_room_pick);
 }
 
 function repopulate_queue(pref_num1, pref_num2){
@@ -705,6 +705,8 @@ function zoom_in_img(imgId){
     dorm_label.innerText = "Dorm: " + DORM_NAME;
 
     get_data(ADDR + ":" + PORT + "/time/"+NETID+"/"+DORM_NAME, populate_picktime);
+
+    get_data(ADDR + ":" + PORT + "/selection/"+NETID+, populate_room_pick);
 
 
 
