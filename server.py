@@ -1,10 +1,12 @@
 from flask import Flask, request
+from flask_cors import CORS
 from datetime import datetime
 import mysql.connector
 import json
 import sys
 import os
 app = Flask(__name__)
+cors = CORS(app)
 
 
 # Return available room list
